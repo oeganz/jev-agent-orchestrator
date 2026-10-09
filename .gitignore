@@ -1,0 +1,29 @@
+# secrets - never commit
+.env
+**/.env
+.env.local
+
+# The four completed runs are committed as evidence. New runs are runtime state
+# and stay local - the repo must not grow with every dispatch.
+fleet/runs/*
+!fleet/runs/.gitkeep
+!fleet/runs/20261003-2245-hello-runcount/
+!fleet/runs/20261003-2310-defect-hunt/
+!fleet/runs/20261004-0200-rework-loop/
+!fleet/runs/20261004-1743-client-report-upload/
+
+# Session transcripts: raw jsonl never leaves ~/.claude; the scrubbed copy under
+# sessions/ is the one that is committed.
+sessions/raw/
+
+# local claude settings
+.claude/settings.local.json
+**/.claude/settings.local.json
+
+# dependencies (the built monitor UI ships in monitor/dist/)
+node_modules/
+
+# editor + os
+*.log
+.DS_Store
+Thumbs.db

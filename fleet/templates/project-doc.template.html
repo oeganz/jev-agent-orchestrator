@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+
+<html data-theme="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>Project Doc Template</title>
+<script type="application/json" id="doc-meta">{"project":"project-doc-template","doc_version":"0.1.0","generated_by":"fleet/templates/project-doc.template.html","generated_at":"2026-10-08","commit":"TEMPLATE"}</script>
+<style>
+  :root {
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --fg: #0f172a;
+    --fg-muted: #64748b;
+    --border: #e2e8f0;
+    --border-light: #f1f5f9;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --primary-light: #eff6ff;
+    --accent: #0284c7;
+    --tag-bg: #f1f5f9;
+    --tag-fg: #475569;
+    --success: #16a34a;
+    --success-bg: #f0fdf4;
+    --warning: #d97706;
+    --warning-bg: #fffbeb;
+    --danger: #dc2626;
+    --danger-bg: #fef2f2;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  }
+
+  [data-theme="dark"] {
+    --bg: #0b0f19;
+    --card-bg: #131b2e;
+    --fg: #f1f5f9;
+    --fg-muted: #94a3b8;
+    --border: #1e293b;
+    --border-light: #162032;
+    --primary: #3b82f6;
+    --primary-hover: #60a5fa;
+    --primary-light: rgba(59, 130, 246, 0.12);
+    --accent: #38bdf8;
+    --tag-bg: #1e293b;
+    --tag-fg: #cbd5e1;
+    --success: #22c55e;
+    --success-bg: rgba(34, 197, 94, 0.12);
+    --warning: #f59e0b;
+    --warning-bg: rgba(245, 158, 11, 0.12);
+    --danger: #f87171;
+    --danger-bg: rgba(248, 113, 113, 0.12);
+    --purple: #a855f7;
+    --purple-bg: rgba(168, 85, 247, 0.12);
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* Type scale (six steps: 11 / 14 / 18 / 23 / 29 / 37).
+     Ratios: 1.27, 1.29, 1.28, 1.26, 1.28 - all >= 1.25.
+     Anything under 12px is reserved for uppercase micro-labels only. */
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .brand h1 {
+    font-size: 23px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+
+  .brand p {
+    font-size: 14px;
+    color: var(--fg-muted);
+    margin-top: 2px;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .theme-toggle, .review-toggle {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s ease;
+  }
+
+  .theme-toggle:hover, .review-toggle:hover { background: var(--border-light); }
+
+  .review-toggle.active {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+
+  main {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  .banner {
+    background: var(--primary-light);
+    border: 1px solid var(--primary);
+    color: var(--fg);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+  .banner strong { color: var(--primary); margin-right: 6px; }
+
+  /* Wiki layout */
+  .wiki-layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+  .wiki-sidebar {
+    flex: 0 0 220px;
+    position: sticky;
+    top: 80px;
+    align-self: flex-start;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    padding-right: 12px;
+  }
+  .wiki-content {
+    flex: 1;
+    min-width: 0;
+  }
+  .wiki-menu-group { margin-bottom: 16px; }
+  .wiki-menu-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--fg-muted);
+    margin-bottom: 8px;
+    padding-left: 6px;
+  }
+  .wiki-nav { display: flex; flex-direction: column; gap: 2px; }
+  .side-btn {
+    padding: 8px 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fg-muted);
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s ease;
+    width: 100%;
+  }
+  .side-btn:hover { background: var(--border-light); color: var(--fg); }
+  .side-btn.active { background: var(--primary-light); color: var(--primary); font-weight: 700; }
+
+  .page-pane { display: none; }
+  .page-pane.active { display: block; }
+
+  /* Page sections / cards */
+  .section-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .section-card h2 {
+    font-size: 23px;
+    margin-bottom: 10px;
+    color: var(--fg);
+    line-height: 1.3;
+  }
+  .section-card h3 {
+    font-size: 18px;
+    margin: 12px 0 6px;
+    color: var(--fg);
+    line-height: 1.35;
+  }
+  .section-card p { color: var(--fg); margin-bottom: 10px; }
+  .section-card ul { padding-left: 20px; margin-bottom: 10px; }
+  .section-card li { margin-bottom: 4px; }
+
+  /* Metrics */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .metric-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-shadow: var(--shadow-sm);
+  }
+  .metric-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--fg-muted);
+    margin-bottom: 4px;
+  }
+  .metric-val { font-size: 29px; font-weight: 700; color: var(--fg); line-height: 1.2; }
+  .metric-sub { font-size: 11px; color: var(--fg-muted); margin-top: 2px; }
+
+  /* Tabs (within a page) */
+  .tabs-nav {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    gap: 4px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+  }
+  .tab-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fg-muted);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  .tab-btn:hover { color: var(--fg); }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* Claims: hover/click tooltip, sources, review state */
+  .claim {
+    border-radius: 4px;
+    padding: 1px 4px;
+    margin: 0 1px;
+    cursor: help;
+    border-bottom: 2px dotted var(--accent);
+    transition: background 0.12s ease;
+  }
+  .claim[data-source="code"]    { background: var(--primary-light); border-color: var(--primary); }
+  .claim[data-source="config"]  { background: var(--purple-bg);   border-color: var(--purple); }
+  .claim[data-source="doc"]     { background: var(--warning-bg);  border-color: var(--warning); }
+  .claim[data-source="inferred"]{ background: transparent;        border-bottom-style: dotted; border-color: var(--fg-muted); }
+  .claim:hover { filter: brightness(1.1); }
+
+  .claim-note {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-left: 4px;
+    vertical-align: -1px;
+    background: var(--accent);
+    border-radius: 50%;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 12px;
+    text-align: center;
+  }
+
+  /* Review bar */
+  .review-bar {
+    position: sticky;
+    top: 60px;
+    z-index: 90;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow-sm);
+    font-size: 14px;
+  }
+  body.review-mode .review-bar { display: flex; }
+
+  .review-bar .summary-pill {
+    background: var(--tag-bg);
+    color: var(--tag-fg);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .review-bar .pill-agree   { background: var(--success-bg); color: var(--success); }
+  .review-bar .pill-wrong   { background: var(--danger-bg);  color: var(--danger); }
+  .review-bar .pill-unsure  { background: var(--warning-bg); color: var(--warning); }
+
+  .review-bar .actions { display: inline-flex; gap: 6px; margin-left: auto; }
+  .review-bar button {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--fg);
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .review-bar button:hover { background: var(--border-light); }
+
+  /* Review popover for a single claim */
+  .claim-popover {
+    position: absolute;
+    z-index: 200;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-shadow: var(--shadow-lg);
+    font-size: 14px;
+    max-width: 320px;
+    min-width: 220px;
+    display: none;
+  }
+  .claim-popover.open { display: block; }
+  /* Belt-and-suspenders: a closed popover MUST NOT intercept pointer events.
+     `display: none` already removes it from hit-testing, but explicit
+     pointer-events keeps the invariant if a future style override ever
+     makes it visible without the .open class. */
+  .claim-popover:not(.open) { pointer-events: none; }
+  .claim-popover .pop-row { display: flex; gap: 6px; align-items: center; margin-top: 6px; }
+  .claim-popover .pop-label { font-size: 11px; font-weight: 700; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .claim-popover .pop-id { font-family: var(--font-mono); font-weight: 700; color: var(--primary); }
+  .claim-popover .pop-evidence { font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted); }
+  .claim-popover .pop-verdict { display: inline-flex; gap: 4px; }
+  .claim-popover .pop-verdict button {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--fg);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .claim-popover .pop-verdict button.active.v-agree  { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+  .claim-popover .pop-verdict button.active.v-wrong  { background: var(--danger-bg);  color: var(--danger);  border-color: var(--danger); }
+  .claim-popover .pop-verdict button.active.v-unsure { background: var(--warning-bg); color: var(--warning); border-color: var(--warning); }
+  .claim-popover textarea {
+    width: 100%;
+    margin-top: 6px;
+    background: var(--bg);
+    color: var(--fg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 6px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    resize: vertical;
+    min-height: 32px;
+  }
+
+  /* Highlight reviewed claims */
+  body.review-mode .claim[data-verdict="agree"]  { box-shadow: 0 0 0 2px var(--success) inset; }
+  body.review-mode .claim[data-verdict="wrong"]  { box-shadow: 0 0 0 2px var(--danger)  inset; text-decoration: line-through; }
+  body.review-mode .claim[data-verdict="unsure"] { box-shadow: 0 0 0 2px var(--warning) inset; }
+
+  /* Badges */
+  .badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: inline-block;
+  }
+  .badge-code     { background: var(--primary-light); color: var(--primary); }
+  .badge-config   { background: var(--purple-bg);      color: var(--purple); }
+  .badge-doc      { background: var(--warning-bg);     color: var(--warning); }
+  .badge-inferred { background: var(--tag-bg);        color: var(--tag-fg); }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 24px 0 12px;
+    color: var(--fg-muted);
+    font-size: 14px;
+  }
+
+  /* Diagrams & zoom container (matches <client> reference) */
+  .diagram-container {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .diagram-header {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg);
+    user-select: none;
+  }
+
+  .diagram-title {
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--fg);
+  }
+
+  .diagram-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .zoom-indicator {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--fg-muted);
+    padding: 3px 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    min-width: 52px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .ctrl-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    min-width: 32px;
+    height: 28px;
+    padding: 0 8px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.15s ease;
+  }
+
+  .ctrl-btn:hover {
+    background: var(--border-light);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .ctrl-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .diagram-viewport {
+    height: 360px;
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    background: var(--card-bg);
+  }
+
+  .diagram-viewport.is-dragging { cursor: grabbing; }
+
+  .diagram-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .diagram-canvas pre.mermaid {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 16px !important;
+    display: block !important;
+    overflow: auto !important;
+    background: transparent !important;
+    border: none !important;
+    color: var(--fg);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* The svg emitted by Mermaid gets unwrapped onto .diagram-canvas. Make it fill. */
+  .diagram-canvas > svg {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 100% !important;
+    min-height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    display: block !important;
+    user-select: none;
+  }
+
+  .diagram-fallback {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--fg-muted);
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+  }
+
+  .diagram-fallback code {
+    font-family: var(--font-mono);
+    background: var(--tag-bg);
+    color: var(--tag-fg);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  .zoom-hint {
+    position: absolute;
+    bottom: 10px;
+    right: 14px;
+    background: rgba(15, 23, 42, 0.7);
+    color: #ffffff;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    pointer-events: none;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Mobile */
+  @media (max-width: 720px) {
+    .wiki-layout { flex-direction: column; gap: 12px; }
+    .wiki-sidebar { flex: 1 1 auto; position: static; max-height: none; border-right: none; border-bottom: 1px solid var(--border); padding: 0 0 12px; }
+    .wiki-menu-nav-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    .header-container { padding: 10px 12px; }
+    .diagram-viewport { height: 280px; }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="header-container">
+    <div class="brand">
+      <h1>Project Doc</h1>
+      <p>Generic template · claim-by-claim human review</p>
+    </div>
+    <div class="header-actions">
+      <button class="review-toggle" id="reviewToggle" aria-pressed="false">Review: off</button>
+      <button class="theme-toggle" id="themeToggle"><span id="themeIcon">&#9788;</span> Mode</button>
+    </div>
+  </div>
+  <div class="review-bar" id="reviewBar" role="region" aria-label="Review summary">
+    <span class="summary-pill" id="reviewSummary">reviewed 0/0</span>
+    <span class="summary-pill pill-agree"  id="reviewAgree">agree 0</span>
+    <span class="summary-pill pill-wrong"  id="reviewWrong">wrong 0</span>
+    <span class="summary-pill pill-unsure" id="reviewUnsure">unsure 0</span>
+    <span class="actions">
+      <button id="reviewExport" type="button">Export</button>
+      <button id="reviewImport" type="button">Import</button>
+      <input id="reviewImportFile" type="file" accept="application/json,.json" hidden />
+    </span>
+  </div>
+</header>
+
+<main>
+
+<div class="banner">
+  <strong>How to read this:</strong>
+  every <em>underlined</em> phrase is an AI claim with a source (<span class="badge badge-code">code</span> <span class="badge badge-config">config</span> <span class="badge badge-doc">doc</span> <span class="badge badge-inferred">inferred</span>) and a pointer into the codebase or doc. Click a claim to see its evidence; turn on <em>Review</em> to mark it agree / wrong / unsure and export a human-vs-AI report. Any number that came from RUNNING a command carries <em>"as of &lt;short sha&gt;"</em> so you can see it may be stale; re-run the suite and update the page when the count drifts.
+</div>
+
+<div class="metrics-grid">
+  <div class="metric-card">
+    <div class="metric-title">Claims</div>
+    <div class="metric-val" id="metricClaims">--</div>
+    <div class="metric-sub">across the doc</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-title">Sourced</div>
+    <div class="metric-val" id="metricSourced">--</div>
+    <div class="metric-sub">have an evidence pointer</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-title">Inferred</div>
+    <div class="metric-val" id="metricInferred">--</div>
+    <div class="metric-sub">no ground truth, flagged</div>
+  </div>
+</div>
+
+<div class="wiki-layout">
+  <aside class="wiki-sidebar">
+    <div class="wiki-menu-group">
+      <div class="wiki-menu-title">Doc</div>
+      <div class="wiki-nav">
+        <button class="side-btn active" data-page="overview">Overview</button>
+      </div>
+    </div>
+    <div class="wiki-menu-group">
+      <div class="wiki-menu-title">How it works</div>
+      <div class="wiki-nav">
+        <button class="side-btn" data-page="architecture">Architecture</button>
+        <button class="side-btn" data-page="flows">Flows</button>
+      </div>
+    </div>
+    <div class="wiki-menu-group">
+      <div class="wiki-menu-title">Reference</div>
+      <div class="wiki-nav">
+        <button class="side-btn" data-page="reference">Reference</button>
+      </div>
+    </div>
+  </aside>
+  <div class="wiki-content">
+
+    <div class="page-pane active" id="page-overview">
+      <div class="section-card">
+        <h2>Overview</h2>
+        <p>
+          This is the <span class="claim" data-claim="OVERVIEW-1" data-source="doc" data-evidence="CLAUDE.md:1">fleet's canonical document</span>.
+          It exists so an AI can write the first draft and a human can audit it
+          claim-by-claim. Every inline phrase tagged
+          <span class="claim" data-claim="OVERVIEW-2" data-source="doc" data-evidence="fleet/bin/project-doc.test.mjs:1">with class <code>claim</code></span>
+          carries an id, a source, and an evidence pointer
+          <span class="claim" data-claim="OVERVIEW-3" data-source="code" data-evidence="fleet/bin/lib/project-doc.mjs:297"><code>path:line</code></span>.
+        </p>
+        <p>
+          The doc is one file: <span class="claim" data-claim="OVERVIEW-4" data-source="code" data-evidence="fleet/bin/fleet.mjs:22"><code>fleet/bin/fleet.mjs</code></span>
+          hosts the <span class="claim" data-claim="OVERVIEW-5" data-source="inferred">CLI entry point</span>,
+          and the helpers live under
+          <span class="claim" data-claim="OVERVIEW-6" data-source="code" data-evidence="fleet/bin/lib/cascade.mjs:10"><code>fleet/bin/lib/cascade.mjs</code></span>.
+        </p>
+        <p>
+          Replace these placeholders with your project. The contract stays the
+          same: <span class="claim" data-claim="OVERVIEW-7" data-source="doc" data-evidence="fleet/bin/project-doc.test.mjs:11">one <code>doc-meta</code> JSON block</span>,
+          claim tags with <span class="claim" data-claim="OVERVIEW-8" data-source="doc" data-evidence="fleet/bin/project-doc.test.mjs:69">class <code>claim</code> + data-claim + data-source + data-evidence</span>,
+          and a sidebar with at least <span class="claim" data-claim="OVERVIEW-9" data-source="inferred">Overview / Architecture / Flows / Reference</span> pages.
+        </p>
+      </div>
+    </div>
+
+    <div class="page-pane" id="page-architecture">
+      <div class="tabs-nav">
+        <button class="tab-btn active" data-tab="arch-stack">Stack</button>
+        <button class="tab-btn" data-tab="arch-data">Data</button>
+      </div>
+      <div class="tab-pane active" id="tab-arch-stack">
+        <div class="section-card">
+          <h2>Stack</h2>
+          <p>
+            The doc is one static HTML file. It loads two CDN scripts:
+            <span class="claim" data-claim="ARCH-1" data-source="doc" data-evidence="fleet/templates/project-doc.template.html:354">Mermaid</span>
+            for diagrams and
+            <span class="claim" data-claim="ARCH-2" data-source="doc" data-evidence="fleet/bin/fleet.mjs:2">svg-pan-zoom</span>
+            for panning. No build step, no deps.
+          </p>
+          <h3>Token system</h3>
+          <p>
+            The visual language is the same as the reference:
+            <span class="claim" data-claim="ARCH-3" data-source="doc" data-evidence="fleet/templates/project-doc.template.html:14"><code>:root</code> CSS variables</span>
+            with a dark default and a <span class="claim" data-claim="ARCH-4" data-source="code" data-evidence="fleet/templates/project-doc.template.html:50"><code>[data-theme="dark"]</code> override</span>.
+          </p>
+          <h3>Contract diagram</h3>
+          <p>
+            The diagram below summarises the template's own contract
+            (<span class="claim" data-claim="ARCH-5" data-source="code" data-evidence="fleet/bin/lib/project-doc.mjs:137">extractClaims</span>,
+            <span class="claim" data-claim="ARCH-6" data-source="code" data-evidence="fleet/bin/lib/project-doc.mjs:225">validateDoc</span>,
+            <span class="claim" data-claim="ARCH-7" data-source="code" data-evidence="fleet/bin/lib/project-doc.mjs:297">gapReport</span>) and is rendered through the same Mermaid + svg-pan-zoom pipeline the page wires up.
+          </p>
+          <div class="diagram-container" data-canvas="archCanvas">
+            <div class="diagram-header">
+              <div class="diagram-title">Project-doc template pipeline</div>
+              <div class="diagram-controls">
+                <span class="zoom-indicator" data-zoom="archCanvas">100%</span>
+                <button class="ctrl-btn" type="button" data-zoom-action="in"  data-canvas="archCanvas" title="Zoom in">+</button>
+                <button class="ctrl-btn" type="button" data-zoom-action="out" data-canvas="archCanvas" title="Zoom out">&minus;</button>
+                <button class="ctrl-btn" type="button" data-zoom-action="fit" data-canvas="archCanvas" title="Fit">Fit</button>
+                <button class="ctrl-btn" type="button" data-zoom-action="reset" data-canvas="archCanvas" title="Reset">1:1</button>
+              </div>
+            </div>
+            <div class="diagram-viewport" data-viewport="archCanvas">
+                <div class="diagram-canvas" id="archCanvas">
+<pre class="mermaid">
+flowchart LR
+    HTMLDoc[("project-doc HTML")]:::src --&gt;|extractClaims| Claims[("claims")]:::art
+    Claims --&gt;|validateDoc| Check["doc-check"]:::cmd
+    ReviewJSON["review.json"]:::rev --&gt;|gapReport| Gap["doc-gap"]:::cmd
+    Claims --&gt; Gap
+    Check --&gt;|ok / errors| Out(["ok / errors"]):::art
+    Gap --&gt;|markdown| Out
+    classDef src fill:#0f1d38,stroke:#3b82f6,color:#f1f5f9
+    classDef art fill:#0a2918,stroke:#16a34a,color:#f1f5f9
+    classDef rev fill:#3a1a5b,stroke:#a855f7,color:#f1f5f9
+    classDef cmd fill:#1e293b,stroke:#38bdf8,color:#f1f5f9
+    class HTMLDoc,Claims,Out src
+    class ReviewJSON rev
+    class Check,Gap cmd
+</pre>
+                </div>
+                <div class="zoom-hint">Scroll to zoom &middot; drag to pan &middot; double-click to fit</div>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane" id="tab-arch-data">
+        <div class="section-card">
+          <h2>Data</h2>
+          <p>
+            Claims come from the doc. Reviews are stored in
+            <span class="claim" data-claim="DATA-1" data-source="doc" data-evidence="fleet/templates/project-doc.template.html:636">localStorage</span>
+            keyed by <span class="claim" data-claim="DATA-2" data-source="inferred">project + doc_version</span>
+            and exported as a JSON file the human can hand back to the AI.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-pane" id="page-flows">
+      <div class="tabs-nav">
+        <button class="tab-btn active" data-tab="flow-review">Review</button>
+        <button class="tab-btn" data-tab="flow-export">Export</button>
+      </div>
+      <div class="tab-pane active" id="tab-flow-review">
+        <div class="section-card">
+          <h2>Human review flow</h2>
+          <ol>
+            <li>Toggle <em>Review</em> in the header.</li>
+            <li>Click any claim: pick <code>agree</code>, <code>wrong</code>, or <code>unsure</code>; add a note.</li>
+            <li>Watch the summary bar at the top fill in.</li>
+            <li>Export the review as JSON to share with the AI author.</li>
+          </ol>
+          <h3>Sequence</h3>
+          <p>The sequence below traces one review turn (human clicks claim, verdict stored, bar refreshed) end to end.</p>
+          <div class="diagram-container" data-canvas="flowSeqCanvas">
+            <div class="diagram-header">
+              <div class="diagram-title">One review turn</div>
+              <div class="diagram-controls">
+                <span class="zoom-indicator" data-zoom="flowSeqCanvas">100%</span>
+                <button class="ctrl-btn" type="button" data-zoom-action="in"  data-canvas="flowSeqCanvas" title="Zoom in">+</button>
+                <button class="ctrl-btn" type="button" data-zoom-action="out" data-canvas="flowSeqCanvas" title="Zoom out">&minus;</button>
+                <button class="ctrl-btn" type="button" data-zoom-action="fit" data-canvas="flowSeqCanvas" title="Fit">Fit</button>
+                <button class="ctrl-btn" type="button" data-zoom-action="reset" data-canvas="flowSeqCanvas" title="Reset">1:1</button>
+              </div>
+            </div>
+            <div class="diagram-viewport" data-viewport="flowSeqCanvas">
+                <div class="diagram-canvas" id="flowSeqCanvas">
+<pre class="mermaid">
+sequenceDiagram
+    participant H as Human
+    participant DOM as Page DOM
+    participant ST as localStorage
+    H-&gt;&gt;DOM: click claim
+    DOM-&gt;&gt;DOM: buildPopover + positionPopover
+    H-&gt;&gt;DOM: pick agree / wrong / unsure
+    DOM-&gt;&gt;DOM: reviews[id] = {verdict, note}
+    DOM-&gt;&gt;ST: lsSet(reviewKey, JSON)
+    DOM-&gt;&gt;DOM: refreshClaimStyling + refreshSummary
+    ST--&gt;&gt;DOM: ok (or silent fail)
+    DOM--&gt;&gt;H: bar pills + verdict ring
+</pre>
+                </div>
+                <div class="zoom-hint">Scroll to zoom &middot; drag to pan &middot; double-click to fit</div>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane" id="tab-flow-export">
+        <div class="section-card">
+          <h2>Export / import</h2>
+          <p>
+            <em>Export</em> writes a JSON file with shape
+            <span class="claim" data-claim="FLOW-1" data-source="doc" data-evidence="fleet/bin/lib/project-doc.mjs:356">{project, doc_version, reviewer, reviewed_at, reviews[]}</span>.
+            <em>Import</em> reads the same file and merges into localStorage.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-pane" id="page-reference">
+      <div class="section-card">
+        <h2>Reference</h2>
+        <h3>Claim schema</h3>
+        <ul>
+          <li><code>data-claim</code>: stable id (required).</li>
+          <li><code>data-source</code>: <code>code | config | doc | inferred</code>.</li>
+          <li><code>data-evidence</code>: <code>path:line</code> or <code>path:line-line</code> (required unless <code>inferred</code>).</li>
+        </ul>
+        <h3>Doc meta</h3>
+        <p>A <code>&lt;script type="application/json" id="doc-meta"&gt;</code> block with <code>project, doc_version, generated_by, generated_at, commit</code>.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="claim-popover" id="claimPopover" role="dialog" aria-label="Claim details"></div>
+
+<footer>
+  Generated from <code>fleet/templates/project-doc.template.html</code>. Offline-capable except the two CDN scripts.
+</footer>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---------- Theme -------------------------------------------------------
+  // localStorage may throw in private windows, embedded webviews, or when
+  // storage is full - the page must not break, only lose persistence.
+  var storage = (function () {
+    var s = {};
+    var test;
+    try { test = '__t__'; localStorage.setItem(test, test); localStorage.removeItem(test); s.ok = true; }
+    catch (e) { s.ok = false; }
+    return s;
+  })();
+
+  function lsGet(k, d) { try { var v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+
+  var themeToggle = document.getElementById('themeToggle');
+  var themeIcon = document.getElementById('themeIcon');
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    if (themeIcon) themeIcon.innerHTML = t === 'dark' ? '&#9788;' : '&#9790;';
+    lsSet('pd_theme', t);
+  }
+  setTheme(lsGet('pd_theme', 'dark'));
+  if (themeToggle) themeToggle.addEventListener('click', function () {
+    var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+    setTheme(cur === 'dark' ? 'light' : 'dark');
+  });
+
+  // ---------- Mermaid -----------------------------------------------------
+  // Initialised lazily so the theme attribute is settled first. Renders only
+  // when its parent tab becomes visible.
+  function initMermaid() {
+    if (!window.mermaid) return;
+    var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    try {
+      mermaid.initialize({ startOnLoad: false, theme: isDark ? 'dark' : 'default', securityLevel: 'loose' });
+    } catch (e) { /* silent */ }
+  }
+  function renderMermaidIn(container) {
+    if (!window.mermaid) return;
+    var blocks = container.querySelectorAll('pre.mermaid:not([data-processed="true"])');
+    if (!blocks.length) return;
+    // Skip rendering if the container has zero box dimensions: Mermaid's
+    // layout runs over an unmeasurable area and emits `translate(undefined,
+    // NaN)` for node groups, flooding the console. The sidebar/tab handler
+    // re-calls renderMermaidIn once the pane becomes visible.
+    var cBox = container.getBoundingClientRect ? container.getBoundingClientRect() : null;
+    if (cBox && (!(cBox.width > 0) || !(cBox.height > 0))) return;
+    var promise;
+    try {
+      promise = mermaid.run({ nodes: Array.from(blocks) });
+    } catch (e) { /* leave as <pre> */ return Promise.resolve(); }
+    return Promise.resolve(promise).then(function () {
+      blocks.forEach(function (p) {
+        var svg = p.querySelector('svg');
+        if (svg) {
+          svg.style.maxWidth = 'none';
+          svg.style.maxHeight = 'none';
+          svg.replaceWith(svg);
+        }
+      });
+      initPanZoomIn(container);
+    }).catch(function () { /* leave as <pre> */ });
+  }
+
+  // ---------- svg-pan-zoom wiring ------------------------------------------
+  // One svgPanZoom instance per .diagram-canvas (keyed by id). Re-entry on
+  // the same canvas must not double-bind: we tear down the previous instance
+  // and rebind fresh buttons. If svgPanZoom is missing (CDN down / offline),
+  // the page must still render: the <pre.mermaid> stays readable as code and
+  // a small inline note is shown so the controls do not appear broken.
+  var panZoomInstances = Object.create(null);
+  var panZoomBound = Object.create(null);
+
+  function ensureFallback(canvas) {
+    if (!canvas) return;
+    var container = canvas.closest('.diagram-container');
+    if (!container) return;
+    if (container.querySelector('.diagram-fallback')) return;
+    var note = document.createElement('div');
+    note.className = 'diagram-fallback';
+    note.innerHTML = '<strong>Diagram source.</strong> Mermaid or svg-pan-zoom '
+      + 'failed to load (offline / CDN blocked). The block above shows the raw <code>'
+      + canvas.id + '</code> mermaid source so the contract is still readable.';
+    container.appendChild(note);
+  }
+
+  function initPanZoomIn(container) {
+    if (!container) return;
+    var canvases = container.querySelectorAll('.diagram-canvas');
+    for (var i = 0; i < canvases.length; i++) {
+      var canvas = canvases[i];
+      if (!canvas.id) continue;
+      // If svgPanZoom never loaded, the <pre> remains visible (CSS keeps it
+      // padded + readable). Wire nothing and show the fallback note.
+      if (!window.svgPanZoom) { ensureFallback(canvas); continue; }
+      // Tear down a previous instance on the same canvas so re-entry is safe.
+      var prev = panZoomInstances[canvas.id];
+      if (prev && typeof prev.destroy === 'function') {
+        try { prev.destroy(); } catch (e) { /* best-effort */ }
+      }
+      panZoomInstances[canvas.id] = null;
+      var svg = canvas.querySelector('svg');
+      if (!svg) { ensureFallback(canvas); continue; }
+      svg.style.maxWidth = 'none';
+      svg.style.width = '100%';
+      svg.style.height = '100%';
+      // If the canvas's parent pane is hidden (display: none), the box
+      // measures 0x0. svg-pan-zoom would emit `translate(undefined, NaN)`
+      // and flood the console. Mark this canvas as pending and let the
+      // sidebar/tab activation re-trigger init once the pane is shown.
+      var box = canvas.getBoundingClientRect();
+      if (!(box.width > 0) || !(box.height > 0)) {
+        canvas.setAttribute('data-pz-pending', 'true');
+        continue;
+      }
+      var viewport = canvas.closest('[data-viewport]') || canvas.parentElement;
+      var pz = null;
+      try {
+        pz = svgPanZoom(svg, {
+          zoomEnabled: true,
+          controlIconsEnabled: false,
+          fit: true,
+          center: true,
+          minZoom: 0.1,
+          maxZoom: 25,
+          zoomScaleSensitivity: 0.25,
+          mouseWheelZoomEnabled: true,
+          dblClickZoomEnabled: false,
+          onZoom: function (scale) {
+            var ind = document.querySelector('[data-zoom="' + canvas.id + '"]');
+            if (ind) ind.textContent = Math.round(scale * 100) + '%';
+          },
+        });
+      } catch (err) {
+        ensureFallback(canvas);
+        continue;
+      }
+      panZoomInstances[canvas.id] = pz;
+      try { pz.resize(); pz.fit(); pz.center(); } catch (e) { /* best-effort */ }
+      var ind0 = document.querySelector('[data-zoom="' + canvas.id + '"]');
+      if (ind0) ind0.textContent = Math.round(pz.getZoom() * 100) + '%';
+      // Bind the controls exactly once per container, reusing if already wired.
+      var containerEl = canvas.closest('.diagram-container');
+      if (containerEl && !panZoomBound[containerEl.dataset.canvas || canvas.id]) {
+        bindDiagramControls(containerEl, canvas.id);
+        if (viewport && !viewport.__pzDbl) {
+          viewport.__pzDbl = true;
+          viewport.addEventListener('dblclick', function () {
+            var inst = panZoomInstances[canvas.id];
+            if (!inst) return;
+            try { inst.reset(); inst.fit(); inst.center(); } catch (e) { /* best-effort */ }
+          });
+        }
+        panZoomBound[containerEl.dataset.canvas || canvas.id] = true;
+      }
+    }
+  }
+
+  function bindDiagramControls(containerEl, canvasId) {
+    var ind = containerEl.querySelector('[data-zoom="' + canvasId + '"]');
+    var buttons = containerEl.querySelectorAll('[data-zoom-action]');
+    buttons.forEach(function (btn) {
+      if (btn.__pzBound) return;
+      btn.__pzBound = true;
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        var inst = panZoomInstances[canvasId];
+        if (!inst) return;
+        var action = btn.getAttribute('data-zoom-action');
+        try {
+          if (action === 'in') inst.zoomBy(1.25);
+          else if (action === 'out') inst.zoomBy(0.8);
+          else if (action === 'fit') { inst.reset(); inst.fit(); inst.center(); }
+          else if (action === 'reset') { inst.reset(); }
+          if (ind) ind.textContent = Math.round(inst.getZoom() * 100) + '%';
+        } catch (err) { /* best-effort */ }
+      });
+    });
+  }
+
+  // ---------- Page + tab navigation --------------------------------------
+  var sideBtns = document.querySelectorAll('.side-btn');
+  var pagePanes = document.querySelectorAll('.page-pane');
+  sideBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      sideBtns.forEach(function (b) { b.classList.remove('active'); });
+      pagePanes.forEach(function (p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      var target = document.getElementById('page-' + btn.getAttribute('data-page'));
+      if (target) {
+        target.classList.add('active');
+        renderMermaidIn(target);
+        // Pane just became visible. If a canvas was deferred at load (the
+        // pane was display:none, box was 0x0), wire it up now that it has
+        // a measurable box.
+        initPanZoomIn(target);
+      }
+    });
+  });
+  document.querySelectorAll('.page-pane').forEach(function (p) {
+    p.addEventListener('click', function (e) {
+      var t = e.target.closest('.tab-btn');
+      if (!t || !p.contains(t)) return;
+      var btns = p.querySelectorAll('.tab-btn');
+      var panes = p.querySelectorAll('.tab-pane');
+      btns.forEach(function (b) { b.classList.remove('active'); });
+      panes.forEach(function (x) { x.classList.remove('active'); });
+      t.classList.add('active');
+      var tgt = document.getElementById('tab-' + t.getAttribute('data-tab'));
+      if (tgt) { tgt.classList.add('active'); renderMermaidIn(tgt); initPanZoomIn(tgt); }
+    });
+  });
+
+  // ---------- Claim popover + review state --------------------------------
+  // Reviews live in localStorage under a key the page-specific project/doc
+  // version pins down. Importing a review.json merges into that key; the
+  // page must keep working when storage is unavailable.
+  var meta = (function () {
+    var el = document.getElementById('doc-meta');
+    if (!el) return { project: 'unknown', doc_version: '0' };
+    try { return JSON.parse(el.textContent || '{}'); }
+    catch (e) { return { project: 'unknown', doc_version: '0' }; }
+  })();
+  function reviewKey() { return 'pd_review_' + meta.project + '_v' + meta.doc_version; }
+
+  var reviews = {}; // id -> { verdict, note }
+  try {
+    var raw = lsGet(reviewKey(), null);
+    if (raw) {
+      var parsed = JSON.parse(raw);
+      if (parsed && parsed.reviews) parsed.reviews.forEach(function (r) {
+        if (r && r.id) reviews[r.id] = { verdict: r.verdict, note: r.note || '' };
+      });
+    }
+  } catch (e) { /* leave reviews empty */ }
+
+  function saveReviews() {
+    var rows = Object.keys(reviews).map(function (id) {
+      return { id: id, verdict: reviews[id].verdict, note: reviews[id].note || '' };
+    });
+    var payload = {
+      project: meta.project, doc_version: meta.doc_version,
+      reviewer: meta.reviewer || 'anonymous',
+      reviewed_at: new Date().toISOString(),
+      reviews: rows,
+    };
+    lsSet(reviewKey(), JSON.stringify(payload));
+    refreshClaimStyling();
+    refreshSummary();
+  }
+
+  function refreshSummary() {
+    var claims = document.querySelectorAll('.claim[data-claim]');
+    var total = claims.length, reviewed = 0, agree = 0, wrong = 0, unsure = 0;
+    claims.forEach(function (c) {
+      var r = reviews[c.getAttribute('data-claim')];
+      if (r) {
+        reviewed++;
+        if (r.verdict === 'agree') agree++;
+        else if (r.verdict === 'wrong') wrong++;
+        else if (r.verdict === 'unsure') unsure++;
+      }
+    });
+    document.getElementById('reviewSummary').textContent = 'reviewed ' + reviewed + '/' + total;
+    document.getElementById('reviewAgree').textContent   = 'agree ' + agree;
+    document.getElementById('reviewWrong').textContent   = 'wrong ' + wrong;
+    document.getElementById('reviewUnsure').textContent  = 'unsure ' + unsure;
+  }
+
+  function refreshClaimStyling() {
+    document.querySelectorAll('.claim[data-claim]').forEach(function (c) {
+      var r = reviews[c.getAttribute('data-claim')];
+      if (r) c.setAttribute('data-verdict', r.verdict);
+      else c.removeAttribute('data-verdict');
+    });
+  }
+
+  // Popover: a single floating panel positioned next to the clicked claim.
+  // We move the panel through the DOM only once and reuse it; its content is
+  // rebuilt per claim so the note textarea always tracks the current id.
+  var popover = document.getElementById('claimPopover');
+  var currentId = null;
+  // The .claim element that opened the popover. Escape uses it to restore
+  // focus so keyboard reviewers do not lose their place after dismissing.
+  var currentOpener = null;
+
+  function buildPopover(claim) {
+    var id = claim.getAttribute('data-claim') || '';
+    var src = claim.getAttribute('data-source') || '';
+    var ev = claim.getAttribute('data-evidence') || '';
+    var note = (reviews[id] && reviews[id].note) || '';
+    var verdict = reviews[id] && reviews[id].verdict;
+    var srcBadge = '<span class="badge badge-' + src + '">' + src + '</span>';
+    var evHtml = ev ? '<div class="pop-evidence">' + escapeHtml(ev) + '</div>' : '<div class="pop-evidence"><em>no evidence (inferred)</em></div>';
+    popover.innerHTML =
+      '<div class="pop-row"><span class="pop-label">id</span><span class="pop-id">' + escapeHtml(id) + '</span></div>' +
+      '<div class="pop-row"><span class="pop-label">source</span>' + srcBadge + '</div>' +
+      '<div class="pop-row"><span class="pop-label">evidence</span></div>' + evHtml +
+      '<div class="pop-row pop-verdict" data-pop-verdict>' +
+        '<button type="button" data-v="agree"  class="v-agree '  + (verdict === 'agree'  ? 'active' : '') + '">Agree</button>' +
+        '<button type="button" data-v="wrong"  class="v-wrong '  + (verdict === 'wrong'  ? 'active' : '') + '">Wrong</button>' +
+        '<button type="button" data-v="unsure" class="v-unsure ' + (verdict === 'unsure' ? 'active' : '') + '">Unsure</button>' +
+      '</div>' +
+      '<textarea data-pop-note placeholder="note (optional)">' + escapeHtml(note) + '</textarea>';
+    currentId = id;
+    // Wire up the verdict buttons and note.
+    popover.querySelectorAll('[data-v]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (!currentId) return;
+        var v = btn.getAttribute('data-v');
+        reviews[currentId] = { verdict: v, note: (reviews[currentId] && reviews[currentId].note) || '' };
+        saveReviews();
+        // Recording a verdict closes the popover. The verdict is now on the
+        // claim and persists to localStorage; reopening the same claim shows
+        // the verdict already set. Leaving the popover open after a verdict
+        // click intercepts pointer events and blocks the next claim click.
+        closePopover();
+      });
+    });
+    var ta = popover.querySelector('[data-pop-note]');
+    ta.addEventListener('input', function () {
+      if (!currentId) return;
+      var v = reviews[currentId] ? reviews[currentId].verdict : null;
+      reviews[currentId] = { verdict: v, note: ta.value };
+      saveReviews();
+    });
+  }
+
+  function positionPopover(claim) {
+    var r = claim.getBoundingClientRect();
+    popover.style.left = Math.min(window.innerWidth - 340, Math.max(8, r.left)) + 'px';
+    popover.style.top  = (window.scrollY + r.bottom + 6) + 'px';
+  }
+
+  function openPopover(claim) {
+    // The opener must be focusable so closePopover({focusOpener:true}) can
+    // restore keyboard focus after Escape. Claims are <span> elements, which
+    // are not focusable by default in HTML5; a one-time tabindex="-1" is
+    // the smallest change that makes the opener a valid focus target.
+    if (!claim.hasAttribute('tabindex')) claim.setAttribute('tabindex', '-1');
+    buildPopover(claim);
+    positionPopover(claim);
+    currentOpener = claim;
+    popover.classList.add('open');
+  }
+  // opts.focusOpener = true restores focus to the claim that opened the
+  // popover. Used by Escape; click-outside and focusout use the default
+  // (no focus theft) because the user has already moved on.
+  function closePopover(opts) {
+    if (!popover.classList.contains('open')) {
+      currentOpener = null;
+      return;
+    }
+    popover.classList.remove('open');
+    currentId = null;
+    var opener = currentOpener;
+    currentOpener = null;
+    if (opts && opts.focusOpener && opener && document.contains(opener)) {
+      try { opener.focus(); } catch (_) { /* element gone */ }
+    }
+  }
+
+  // Click on a claim opens the popover; clicks elsewhere close it.
+  document.addEventListener('click', function (e) {
+    var claim = e.target.closest('.claim[data-claim]');
+    if (claim) { e.stopPropagation(); openPopover(claim); return; }
+    if (!popover.contains(e.target)) closePopover();
+  });
+
+  // Escape dismisses the popover and returns focus to the claim that opened
+  // it so a keyboard reviewer can move on with arrow keys / Tab.
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && popover.classList.contains('open')) {
+      e.preventDefault();
+      closePopover({ focusOpener: true });
+    }
+  });
+
+  // focusout bubbles in modern browsers, so listening on the popover catches
+  // focus leaving any descendant. If the new focus target is outside the
+  // popover, dismiss it; otherwise the reviewer is still interacting inside
+  // (e.g. tabbing from a verdict button to the textarea) - leave it open.
+  // `relatedTarget` is null when focus moves to the document body, which is
+  // also "left the popover" and should close it. We skip the close when the
+  // next focus target is another claim, since the document.click handler will
+  // reopen the popover for it (a click on a claim moves focus on mousedown,
+  // so focusout fires BEFORE click - deferring would race).
+  popover.addEventListener('focusout', function (e) {
+    if (!popover.classList.contains('open')) return;
+    var next = e.relatedTarget;
+    if (next && popover.contains(next)) return;
+    if (next && next.closest && next.closest('.claim[data-claim]')) return;
+    closePopover();
+  });
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
+  function cssEscape(s) {
+    if (window.CSS && CSS.escape) return CSS.escape(s);
+    return String(s).replace(/[^a-zA-Z0-9_-]/g, function (c) { return '\\' + c; });
+  }
+
+  // ---------- Review mode toggle -----------------------------------------
+  var reviewToggle = document.getElementById('reviewToggle');
+  function setReviewMode(on) {
+    document.body.classList.toggle('review-mode', !!on);
+    if (reviewToggle) {
+      reviewToggle.classList.toggle('active', !!on);
+      reviewToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      reviewToggle.textContent = 'Review: ' + (on ? 'on' : 'off');
+    }
+  }
+  if (reviewToggle) reviewToggle.addEventListener('click', function () {
+    var on = !document.body.classList.contains('review-mode');
+    setReviewMode(on);
+    if (!on) closePopover();
+  });
+
+  // ---------- Export / Import --------------------------------------------
+  function exportReview() {
+    var rows = Object.keys(reviews).map(function (id) {
+      return { id: id, verdict: reviews[id].verdict, note: reviews[id].note || '' };
+    });
+    var payload = {
+      project: meta.project, doc_version: meta.doc_version,
+      reviewer: meta.reviewer || 'anonymous',
+      reviewed_at: new Date().toISOString(),
+      reviews: rows,
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'review-' + meta.project + '-v' + meta.doc_version + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  function importReview(payload) {
+    if (!payload || !Array.isArray(payload.reviews)) { alert('invalid review.json'); return; }
+    payload.reviews.forEach(function (r) {
+      if (r && r.id && ['agree', 'wrong', 'unsure'].includes(r.verdict)) {
+        reviews[r.id] = { verdict: r.verdict, note: r.note || '' };
+      }
+    });
+    saveReviews();
+    closePopover();
+  }
+
+  document.getElementById('reviewExport').addEventListener('click', exportReview);
+  var importBtn = document.getElementById('reviewImport');
+  var importFile = document.getElementById('reviewImportFile');
+  if (importBtn) importBtn.addEventListener('click', function () { importFile.click(); });
+  if (importFile) importFile.addEventListener('change', function () {
+    var f = importFile.files && importFile.files[0];
+    if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      try { importReview(JSON.parse(r.result)); }
+      catch (e) { alert('invalid review.json'); }
+    };
+    r.readAsText(f);
+  });
+
+  // ---------- Metrics -----------------------------------------------------
+  var claims = document.querySelectorAll('.claim[data-claim]');
+  var sourced = 0, inferred = 0;
+  claims.forEach(function (c) {
+    var s = c.getAttribute('data-source');
+    if (s === 'inferred') inferred++;
+  });
+  // sourced == claims that have a data-evidence attribute
+  claims.forEach(function (c) { if (c.hasAttribute('data-evidence')) sourced++; });
+  document.getElementById('metricClaims').textContent    = claims.length;
+  document.getElementById('metricSourced').textContent   = sourced.toString();
+  document.getElementById('metricInferred').textContent  = inferred.toString();
+
+  refreshClaimStyling();
+  refreshSummary();
+  initMermaid();
+  // Render mermaid blocks already on the active page on load.
+  var initialPane = document.querySelector('.page-pane.active');
+  if (initialPane) renderMermaidIn(initialPane);
+  // Also eagerly render the diagrams on the other top-level pages so the
+  // first click on the Architecture / Flows sidebar has no flicker.
+  pagePanes.forEach(function (p) {
+    if (p.classList.contains('active')) return;
+    renderMermaidIn(p);
+  });
+})();
+</script>
+</body>
+</html>

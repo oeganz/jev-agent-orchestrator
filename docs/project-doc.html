@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+
+<html data-theme="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>Fleet Project Doc</title>
+<script type="application/json" id="doc-meta">{"project":"fleet","doc_version":"1.0.0","generated_by":"fleet engineer (T2-fleet-doc, run 20261008-0135-project-doc)","generated_at":"2026-10-08","commit":"6617e3b073d52b934d7a062d1883bee4e73a574d"}</script>
+<style>
+  :root {
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --fg: #0f172a;
+    --fg-muted: #64748b;
+    --border: #e2e8f0;
+    --border-light: #f1f5f9;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --primary-light: #eff6ff;
+    --accent: #0284c7;
+    --tag-bg: #f1f5f9;
+    --tag-fg: #475569;
+    --success: #16a34a;
+    --success-bg: #f0fdf4;
+    --warning: #d97706;
+    --warning-bg: #fffbeb;
+    --danger: #dc2626;
+    --danger-bg: #fef2f2;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  }
+
+  [data-theme="dark"] {
+    --bg: #0b0f19;
+    --card-bg: #131b2e;
+    --fg: #f1f5f9;
+    --fg-muted: #94a3b8;
+    --border: #1e293b;
+    --border-light: #162032;
+    --primary: #3b82f6;
+    --primary-hover: #60a5fa;
+    --primary-light: rgba(59, 130, 246, 0.12);
+    --accent: #38bdf8;
+    --tag-bg: #1e293b;
+    --tag-fg: #cbd5e1;
+    --success: #22c55e;
+    --success-bg: rgba(34, 197, 94, 0.12);
+    --warning: #f59e0b;
+    --warning-bg: rgba(245, 158, 11, 0.12);
+    --danger: #f87171;
+    --danger-bg: rgba(248, 113, 113, 0.12);
+    --purple: #a855f7;
+    --purple-bg: rgba(168, 85, 247, 0.12);
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* Type scale (six steps: 11 / 14 / 18 / 23 / 29 / 37).
+     Ratios: 1.27, 1.29, 1.28, 1.26, 1.28 - all >= 1.25.
+     Anything under 12px is reserved for uppercase micro-labels only. */
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .brand h1 {
+    font-size: 23px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+
+  .brand p {
+    font-size: 14px;
+    color: var(--fg-muted);
+    margin-top: 2px;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .theme-toggle, .review-toggle {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s ease;
+  }
+
+  .theme-toggle:hover, .review-toggle:hover { background: var(--border-light); }
+
+  .review-toggle.active {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+
+  main {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  .banner {
+    background: var(--primary-light);
+    border: 1px solid var(--primary);
+    color: var(--fg);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+  .banner strong { color: var(--primary); margin-right: 6px; }
+
+  /* Wiki layout */
+  .wiki-layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+  .wiki-sidebar {
+    flex: 0 0 220px;
+    position: sticky;
+    top: 80px;
+    align-self: flex-start;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    padding-right: 12px;
+  }
+  .wiki-content {
+    flex: 1;
+    min-width: 0;
+  }
+  .wiki-menu-group { margin-bottom: 16px; }
+  .wiki-menu-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--fg-muted);
+    margin-bottom: 8px;
+    padding-left: 6px;
+  }
+  .wiki-nav { display: flex; flex-direction: column; gap: 2px; }
+  .side-btn {
+    padding: 8px 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fg-muted);
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s ease;
+    width: 100%;
+  }
+  .side-btn:hover { background: var(--border-light); color: var(--fg); }
+  .side-btn.active { background: var(--primary-light); color: var(--primary); font-weight: 700; }
+
+  .page-pane { display: none; }
+  .page-pane.active { display: block; }
+
+  /* Page sections / cards */
+  .section-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .section-card h2 {
+    font-size: 23px;
+    margin-bottom: 10px;
+    color: var(--fg);
+    line-height: 1.3;
+  }
+  .section-card h3 {
+    font-size: 18px;
+    margin: 12px 0 6px;
+    color: var(--fg);
+    line-height: 1.35;
+  }
+  .section-card p { color: var(--fg); margin-bottom: 10px; }
+  .section-card ul { padding-left: 20px; margin-bottom: 10px; }
+  .section-card li { margin-bottom: 4px; }
+  .section-card table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 12px;
+    font-size: 14px;
+  }
+  .section-card th, .section-card td {
+    border: 1px solid var(--border);
+    padding: 6px 8px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .section-card th {
+    background: var(--bg);
+    color: var(--fg);
+    font-weight: 700;
+  }
+  .section-card code {
+    font-family: var(--font-mono);
+    background: var(--tag-bg);
+    color: var(--tag-fg);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  /* Metrics */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .metric-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-shadow: var(--shadow-sm);
+  }
+  .metric-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--fg-muted);
+    margin-bottom: 4px;
+  }
+  .metric-val { font-size: 29px; font-weight: 700; color: var(--fg); line-height: 1.2; }
+  .metric-sub { font-size: 11px; color: var(--fg-muted); margin-top: 2px; }
+
+  /* Tabs (within a page) */
+  .tabs-nav {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    gap: 4px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+  }
+  .tab-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fg-muted);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  .tab-btn:hover { color: var(--fg); }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* Claims: hover/click tooltip, sources, review state */
+  .claim {
+    border-radius: 4px;
+    padding: 1px 4px;
+    margin: 0 1px;
+    cursor: help;
+    border-bottom: 2px dotted var(--accent);
+    transition: background 0.12s ease;
+  }
+  .claim[data-source="code"]    { background: var(--primary-light); border-color: var(--primary); }
+  .claim[data-source="config"]  { background: var(--purple-bg);   border-color: var(--purple); }
+  .claim[data-source="doc"]     { background: var(--warning-bg);  border-color: var(--warning); }
+  .claim[data-source="inferred"]{ background: transparent;        border-bottom-style: dotted; border-color: var(--fg-muted); }
+  .claim:hover { filter: brightness(1.1); }
+
+  /* Review bar */
+  .review-bar {
+    position: sticky;
+    top: 60px;
+    z-index: 90;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow-sm);
+    font-size: 14px;
+  }
+  body.review-mode .review-bar { display: flex; }
+
+  .review-bar .summary-pill {
+    background: var(--tag-bg);
+    color: var(--tag-fg);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .review-bar .pill-agree   { background: var(--success-bg); color: var(--success); }
+  .review-bar .pill-wrong   { background: var(--danger-bg);  color: var(--danger); }
+  .review-bar .pill-unsure  { background: var(--warning-bg); color: var(--warning); }
+
+  .review-bar .actions { display: inline-flex; gap: 6px; margin-left: auto; }
+  .review-bar button {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--fg);
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .review-bar button:hover { background: var(--border-light); }
+
+  /* Review popover for a single claim */
+  .claim-popover {
+    position: absolute;
+    z-index: 200;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-shadow: var(--shadow-lg);
+    font-size: 14px;
+    max-width: 320px;
+    min-width: 220px;
+    display: none;
+  }
+  .claim-popover.open { display: block; }
+  /* Belt-and-suspenders: a closed popover MUST NOT intercept pointer events.
+     `display: none` already removes it from hit-testing, but explicit
+     pointer-events keeps the invariant if a future style override ever
+     makes it visible without the .open class. */
+  .claim-popover:not(.open) { pointer-events: none; }
+  .claim-popover .pop-row { display: flex; gap: 6px; align-items: center; margin-top: 6px; }
+  .claim-popover .pop-label { font-size: 11px; font-weight: 700; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .claim-popover .pop-id { font-family: var(--font-mono); font-weight: 700; color: var(--primary); }
+  .claim-popover .pop-evidence { font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted); }
+  .claim-popover .pop-verdict { display: inline-flex; gap: 4px; }
+  .claim-popover .pop-verdict button {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--fg);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .claim-popover .pop-verdict button.active.v-agree  { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+  .claim-popover .pop-verdict button.active.v-wrong  { background: var(--danger-bg);  color: var(--danger);  border-color: var(--danger); }
+  .claim-popover .pop-verdict button.active.v-unsure { background: var(--warning-bg); color: var(--warning); border-color: var(--warning); }
+  .claim-popover textarea {
+    width: 100%;
+    margin-top: 6px;
+    background: var(--bg);
+    color: var(--fg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 6px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    resize: vertical;
+    min-height: 32px;
+  }
+
+  /* Highlight reviewed claims */
+  body.review-mode .claim[data-verdict="agree"]  { box-shadow: 0 0 0 2px var(--success) inset; }
+  body.review-mode .claim[data-verdict="wrong"]  { box-shadow: 0 0 0 2px var(--danger)  inset; text-decoration: line-through; }
+  body.review-mode .claim[data-verdict="unsure"] { box-shadow: 0 0 0 2px var(--warning) inset; }
+
+  /* Badges */
+  .badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: inline-block;
+  }
+  .badge-code     { background: var(--primary-light); color: var(--primary); }
+  .badge-config   { background: var(--purple-bg);      color: var(--purple); }
+  .badge-doc      { background: var(--warning-bg);     color: var(--warning); }
+  .badge-inferred { background: var(--tag-bg);        color: var(--tag-fg); }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 24px 0 12px;
+    color: var(--fg-muted);
+    font-size: 14px;
+  }
+
+  /* Diagrams & zoom container */
+  .diagram-container {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .diagram-header {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg);
+    user-select: none;
+  }
+
+  .diagram-title {
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--fg);
+  }
+
+  .diagram-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .zoom-indicator {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--fg-muted);
+    padding: 3px 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    min-width: 52px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .ctrl-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    min-width: 32px;
+    height: 28px;
+    padding: 0 8px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.15s ease;
+  }
+
+  .ctrl-btn:hover {
+    background: var(--border-light);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .ctrl-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .diagram-viewport {
+    height: 360px;
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    background: var(--card-bg);
+  }
+
+  .diagram-viewport.is-dragging { cursor: grabbing; }
+
+  .diagram-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .diagram-canvas pre.mermaid {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 16px !important;
+    display: block !important;
+    overflow: auto !important;
+    background: transparent !important;
+    border: none !important;
+    color: var(--fg);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .diagram-canvas > svg {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 100% !important;
+    min-height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    display: block !important;
+    user-select: none;
+  }
+
+  .diagram-fallback {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--fg-muted);
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+  }
+
+  .diagram-fallback code {
+    font-family: var(--font-mono);
+    background: var(--tag-bg);
+    color: var(--tag-fg);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  .zoom-hint {
+    position: absolute;
+    bottom: 10px;
+    right: 14px;
+    background: rgba(15, 23, 42, 0.7);
+    color: #ffffff;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    pointer-events: none;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Mobile */
+  @media (max-width: 720px) {
+    .wiki-layout { flex-direction: column; gap: 12px; }
+    .wiki-sidebar { flex: 1 1 auto; position: static; max-height: none; border-right: none; border-bottom: 1px solid var(--border); padding: 0 0 12px; }
+    .wiki-menu-nav-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    .header-container { padding: 10px 12px; }
+    .diagram-viewport { height: 280px; }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="header-container">
+    <div class="brand">
+      <h1>Fleet Project Doc</h1>
+      <p>Agent/Orchestrator harness &middot; claim-by-claim human review</p>
+    </div>
+    <div class="header-actions">
+      <button class="review-toggle" id="reviewToggle" aria-pressed="false">Review: off</button>
+      <button class="theme-toggle" id="themeToggle"><span id="themeIcon">&#9788;</span> Mode</button>
+    </div>
+  </div>
+  <div class="review-bar" id="reviewBar" role="region" aria-label="Review summary">
+    <span class="summary-pill" id="reviewSummary">reviewed 0/0</span>
+    <span class="summary-pill pill-agree"  id="reviewAgree">agree 0</span>
+    <span class="summary-pill pill-wrong"  id="reviewWrong">wrong 0</span>
+    <span class="summary-pill pill-unsure" id="reviewUnsure">unsure 0</span>
+    <span class="actions">
+      <button id="reviewExport" type="button">Export</button>
+      <button id="reviewImport" type="button">Import</button>
+      <input id="reviewImportFile" type="file" accept="application/json,.json" hidden />
+    </span>
+  </div>
+</header>
+
+<main>
+
+<div class="banner">
+  <strong>How to read this:</strong>
+  every <em>underlined</em> phrase is an AI claim with a source (<span class="badge badge-code">code</span> <span class="badge badge-config">config</span> <span class="badge badge-doc">doc</span> <span class="badge badge-inferred">inferred</span>) and a pointer into the codebase or doc. Click a claim to see its evidence; turn on <em>Review</em> to mark it agree / wrong / unsure and export a human-vs-AI report. Any number that came from RUNNING a command carries <em>"as of &lt;short sha&gt;"</em> so you can see it may be stale; re-run the suite and update the page when the count drifts.
+</div>
+
+<div class="metrics-grid">
+  <div class="metric-card">
+    <div class="metric-title">Claims</div>
+    <div class="metric-val" id="metricClaims">--</div>
+    <div class="metric-sub">across the doc</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-title">Sourced</div>
+    <div class="metric-val" id="metricSourced">--</div>
+    <div class="metric-sub">have an evidence pointer</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-title">Inferred</div>
+    <div class="metric-val" id="metricInferred">--</div>
+    <div class="metric-sub">no ground truth, flagged</div>
+  </div>
+</div>
+
+<div class="wiki-layout">
+  <aside class="wiki-sidebar">
+    <div class="wiki-menu-group">
+      <div class="wiki-menu-title">Doc</div>
+      <div class="wiki-nav">
+        <button class="side-btn active" data-page="overview">Overview</button>
+      </div>
+    </div>
+    <div class="wiki-menu-group">
+      <div class="wiki-menu-title">How it works</div>
+      <div class="wiki-nav">
+        <button class="side-btn" data-page="architecture">Architecture</button>
+        <button class="side-btn" data-page="loop">The Loop &amp; Gates</button>
+        <button class="side-btn" data-page="jev">JEV</button>
+      </div>
+    </div>
+    <div class="wiki-menu-group">
+      <div class="wiki-menu-title">Operations</div>
+      <div class="wiki-nav">
+        <button class="side-btn" data-page="operations">Operations</button>
+      </div>
+    </div>
+    <div class="wiki-menu-group">
+      <div class="wiki-menu-title">Reference</div>
+      <div class="wiki-nav">
+        <button class="side-btn" data-page="reference">Reference</button>
+      </div>
+    </div>
+  </aside>
+  <div class="wiki-content">
+
+    <div class="page-pane active" id="page-overview">
+      <div class="section-card">
+        <h2>Overview</h2>
+        <p>
+          The fleet is a multi-agent orchestrator that lives in this directory.
+          Its <span class="claim" data-claim="OV-1" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:6">single contract is in <code>fleet-orchestrator/SKILL.md</code></span>,
+          and the orchestrator session loads it on start.
+          The harness dispatches work to <span class="claim" data-claim="OV-2" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:3">planner, engineer, tester and devops workers</span>
+          and reviews their output through gates.
+        </p>
+        <p>
+          The one-line contract: <span class="claim" data-claim="OV-3" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:8">"Implementation goes to workers"</span>.
+          The orchestrator only acts when the fleet cannot, and
+          <span class="claim" data-claim="OV-4" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:10">gate review authorizes synthesis, never an edit</span>.
+        </p>
+      </div>
+
+      <div class="section-card">
+        <h3>Run-store layout</h3>
+        <p>
+          Every run lives at
+          <span class="claim" data-claim="OV-5" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:76"><code>fleet/runs/&lt;run-id&gt;/</code></span>
+          and contains:
+        </p>
+        <ul>
+          <li><span class="claim" data-claim="OV-6" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:77"><code>run.json</code></span> &mdash; objective, status, mode, optional <code>orca_run</code> id.</li>
+          <li><span class="claim" data-claim="OV-7" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:79"><code>tasks.jsonl</code></span> &mdash; one JSON row per dispatch.</li>
+          <li><span class="claim" data-claim="OV-8" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:80"><code>gates.jsonl</code></span> &mdash; one JSON row per gate decision and per orchestrator-direct action.</li>
+          <li><span class="claim" data-claim="OV-9" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:81"><code>reports/</code></span> &mdash; the worker reports that gate decisions read.</li>
+        </ul>
+        <p>
+          <span class="claim" data-claim="OV-10" data-source="code" data-evidence="fleet/bin/lib/runs.mjs:29"><code>summary.md</code></span>
+          is created at run end and becomes the consolidated report
+          (<span class="claim" data-claim="OV-11" data-source="doc" data-evidence="QUICKSTART.md:68">its presence is what <code>fleet runs</code> reports as <em>summary yes</em></span>).
+        </p>
+      </div>
+
+      <div class="section-card">
+        <h3>Today's run history</h3>
+        <p>
+          <span class="claim" data-claim="OV-12" data-source="inferred">At the time this doc was generated the fleet had 11 runs</span> &mdash; this is what
+          <span class="claim" data-claim="OV-13" data-source="code" data-evidence="fleet/bin/fleet.mjs:32"><code>runDirs()</code></span>
+          counts when <code>fleet status</code> prints the <em>runs</em> line. A
+          curated example active run is
+          <span class="claim" data-claim="OV-14" data-source="code" data-evidence="fleet/runs/20261004-0200-rework-loop/run.json:2"><code>20261004-0200-rework-loop</code></span>.
+        </p>
+      </div>
+    </div>
+
+    <div class="page-pane" id="page-architecture">
+      <div class="section-card">
+        <h2>Architecture</h2>
+        <p>
+          The orchestrator is one role; the harness runs
+          <span class="claim" data-claim="AR-1" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:52">six worker roles</span>:
+          <span class="claim" data-claim="AR-2" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:53">planner</span>,
+          <span class="claim" data-claim="AR-3" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:167">engineer</span>,
+          <span class="claim" data-claim="AR-4" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:168">tester</span>,
+          <span class="claim" data-claim="AR-5" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:57">devops</span>,
+          and <span class="claim" data-claim="AR-6" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:372">the 7b reviewer</span>.
+          Each role has its own SKILL.md under <code>.claude/skills/fleet-*</code>;
+          the orchestrator loads them on dispatch.
+        </p>
+      </div>
+
+      <div class="section-card">
+        <h3>Two dispatch mechanisms</h3>
+        <p>
+          The default is
+          <span class="claim" data-claim="AR-7" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:158">Claude Code subagents</span>:
+          engineers run in place, one writer at a time, and
+          <span class="claim" data-claim="AR-8" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:169">testers run in a fresh agent with <code>isolation: "worktree"</code></span>.
+          Subagents
+          <span class="claim" data-claim="AR-9" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:177">close themselves when done</span>
+          but die with the parent session, so there is no resume path for them.
+        </p>
+        <p>
+          Orca orchestration is kept for two cases only:
+          <span class="claim" data-claim="AR-10" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:180">a reviewer that must be provably unable to write</span>,
+          and
+          <span class="claim" data-claim="AR-11" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:181">a long run that must survive the session</span>
+          (where <code>fleet resume</code> takes over).
+        </p>
+        <p>
+          An Orca run MUST be bound first:
+          <span class="claim" data-claim="AR-12" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:188"><code>orca orchestration run-create --objective "&lt;obj&gt;" --json</code></span>
+          sets <code>run.json.orca_run</code>; without it
+          <span class="claim" data-claim="AR-13" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:191"><code>worker-start</code> fails with <code>consumer_fenced</code></span>.
+          The Run id comes back at
+          <span class="claim" data-claim="AR-14" data-source="code" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:193"><code>result.run.id</code></span>
+          in the JSON envelope.
+        </p>
+      </div>
+
+      <div class="section-card">
+        <h3>Module map</h3>
+        <p>
+          <span class="claim" data-claim="AR-15" data-source="code" data-evidence="fleet/bin/fleet.mjs:1"><code>fleet/bin/fleet.mjs</code></span>
+          is the CLI entry point;
+          <span class="claim" data-claim="AR-16" data-source="code" data-evidence="fleet/bin/lib/project-doc.mjs:14">lib helpers start at <code>SOURCES</code></span>
+          (the source vocabulary <code>code | config | doc | inferred</code> that
+          <span class="claim" data-claim="AR-17" data-source="code" data-evidence="fleet/bin/lib/project-doc.mjs:116"><code>REQUIRED_META_KEYS</code></span>
+          names the keys every <code>doc-meta</code> must carry). The lib modules
+          referenced from the SKILL.md:
+        </p>
+        <ul>
+          <li><span class="claim" data-claim="AR-18" data-source="code" data-evidence="fleet/bin/lib/jev.mjs:33"><code>fleet/bin/lib/jev.mjs</code></span> &mdash; the JEV client (<code>askJev</code>, <code>gateVerdict</code>).</li>
+          <li><span class="claim" data-claim="AR-19" data-source="code" data-evidence="fleet/bin/lib/jev-router.mjs:62"><code>fleet/bin/lib/jev-router.mjs</code></span> &mdash; <code>skillCatalog</code>, <code>buildRouteQuestions</code>, <code>routeDecision</code>.</li>
+          <li><span class="claim" data-claim="AR-20" data-source="code" data-evidence="fleet/bin/lib/orca.mjs:9"><code>fleet/bin/lib/orca.mjs</code></span> &mdash; <code>resolveOrca</code>, <code>orcaStatus</code>, <code>settleSnapshot</code>.</li>
+          <li><span class="claim" data-claim="AR-21" data-source="code" data-evidence="fleet/bin/lib/doctor.mjs:25"><code>fleet/bin/lib/doctor.mjs</code></span> &mdash; <code>fsChecks</code> + <code>commandResolves</code> for <code>fleet doctor</code>.</li>
+          <li><span class="claim" data-claim="AR-22" data-source="code" data-evidence="fleet/bin/lib/project-doc.mjs:137"><code>fleet/bin/lib/project-doc.mjs</code></span> &mdash; <code>extractClaims</code>, <code>validateDoc</code>, <code>gapReport</code> for this doc.</li>
+        </ul>
+      </div>
+
+      <div class="section-card">
+        <h3>Architecture flowchart</h3>
+        <p>
+          The diagram below traces one worker dispatch end to end &mdash;
+          from the orchestrator's task row, through a Claude Code subagent
+          or an Orca worker, into a gate, and back through JEV to the
+          orchestrator's review.
+        </p>
+        <div class="diagram-container" data-canvas="archCanvas">
+          <div class="diagram-header">
+            <div class="diagram-title">Fleet dispatch + gate loop</div>
+            <div class="diagram-controls">
+              <span class="zoom-indicator" data-zoom="archCanvas">100%</span>
+              <button class="ctrl-btn" type="button" data-zoom-action="in"  data-canvas="archCanvas" title="Zoom in">+</button>
+              <button class="ctrl-btn" type="button" data-zoom-action="out" data-canvas="archCanvas" title="Zoom out">&minus;</button>
+              <button class="ctrl-btn" type="button" data-zoom-action="fit" data-canvas="archCanvas" title="Fit">Fit</button>
+              <button class="ctrl-btn" type="button" data-zoom-action="reset" data-canvas="archCanvas" title="Reset">1:1</button>
+            </div>
+          </div>
+          <div class="diagram-viewport" data-viewport="archCanvas">
+              <div class="diagram-canvas" id="archCanvas">
+<pre class="mermaid">
+flowchart LR
+    O[("Orchestrator")]:::src --&gt;|4a Agent tool| CS[("Claude subagent")]:::art
+    O --&gt;|4b orca-cli| RC["orca run-create"]:::cmd
+    RC --&gt;|run.id| WS["orca worker-start"]:::cmd
+    CS --&gt;|reports/X.md| T["tasks.jsonl row"]:::rev
+    WS --&gt;|dispatch id| T
+    T --&gt;|G2 gate| J["askJev + gateVerdict"]:::cmd
+    J --&gt;|decided_by| G["gates.jsonl row"]:::rev
+    G --&gt;|verdict| O
+    classDef src fill:#0f1d38,stroke:#3b82f6,color:#f1f5f9
+    classDef art fill:#0a2918,stroke:#16a34a,color:#f1f5f9
+    classDef rev fill:#3a1a5b,stroke:#a855f7,color:#f1f5f9
+    classDef cmd fill:#1e293b,stroke:#38bdf8,color:#f1f5f9
+    class O,CS src
+    class T,G rev
+    class RC,WS,J cmd
+</pre>
+              </div>
+              <div class="zoom-hint">Scroll to zoom &middot; drag to pan &middot; double-click to fit</div>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-pane" id="page-loop">
+      <div class="section-card">
+        <h2>The Loop and Gates</h2>
+        <p>
+          The orchestrator skill names a numbered loop.
+          <span class="claim" data-claim="LG-1" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:44">Step 1 is Intake</span> &mdash;
+          restate the objective, pick a shape (small inline, planner, devops, or
+          reviewer), and
+          <span class="claim" data-claim="LG-2" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:45">ask the user before spending anything if anything is ambiguous</span>.
+          <span class="claim" data-claim="LG-3" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:74">Step 2 creates the run</span>
+          (run.json + tasks.jsonl + gates.jsonl + reports/).
+          <span class="claim" data-claim="LG-4" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:91">Step 3 is the per-task preflight</span>
+          (tree clean, secrets excluded, <code>base_sha</code> recorded, every
+          dispatch gets a tasks.jsonl row including testers and reworks).
+          <span class="claim" data-claim="LG-5" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:158">Step 4 dispatches</span>
+          (4a subagent, 4b Orca),
+          <span class="claim" data-claim="LG-6" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:200">Step 5 waits</span>,
+          <span class="claim" data-claim="LG-7" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:216">Step 5c asks JEV</span>,
+          <span class="claim" data-claim="LG-8" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:288">Step 6 is G2</span>,
+          <span class="claim" data-claim="LG-9" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:362">Step 7 dispatches the tester</span>,
+          <span class="claim" data-claim="LG-9b" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:425">Step 8 is G3</span>,
+          and <span class="claim" data-claim="LG-10" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:439">Step 9 reports and settles</span>.
+        </p>
+      </div>
+
+      <div class="section-card">
+        <h3>Gates G0 through G4</h3>
+        <p>
+          The <span class="claim" data-claim="LG-11" data-source="code" data-evidence="fleet/config.json:5"><code>modes.auto.gates</code></span> list is
+          <code>["G0","G1","G2","G3"]</code>; G4 is always human. Each gate
+          has its own role:
+        </p>
+        <ul>
+          <li><span class="claim" data-claim="LG-12" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:110"><strong>G0 budget</strong></span> &mdash; advisory while <code>budget.daily_cap</code> is null.</li>
+          <li><span class="claim" data-claim="LG-13" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:118"><strong>G1 plan</strong></span> &mdash; review planner specs before any dispatch.</li>
+          <li><span class="claim" data-claim="LG-14" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:288"><strong>G2 build</strong></span> &mdash; a mechanical per-task check; JEV only when the change is high-risk or the evidence is ambiguous.</li>
+          <li><span class="claim" data-claim="LG-15" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:425"><strong>G3 verify</strong></span> &mdash; JEV decides the tester's report.</li>
+          <li><span class="claim" data-claim="LG-16" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:433"><strong>G4 irreversible</strong></span> &mdash; human only; JEV is OFF (<code>gates_jev.G4 = false</code>).</li>
+        </ul>
+        <p>
+          <span class="claim" data-claim="LG-17" data-source="code" data-evidence="fleet/config.json:147"><code>gates_jev</code></span>
+          names which gates route to JEV; the keys are
+          <code>G1, G2, G3 = true</code>, <code>G0, G4 = false</code>.
+        </p>
+      </div>
+
+      <div class="section-card">
+        <h3>G2 / G3 policy table</h3>
+        <p>
+          The policy reads as it does today, from
+          <span class="claim" data-claim="LG-18" data-source="code" data-evidence="fleet/bin/lib/jev.mjs:121"><code>gateVerdict()</code></span>
+          and the orchestrator skill:
+        </p>
+        <table>
+          <thead>
+            <tr><th>Branch</th><th>What happens</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="claim" data-claim="LG-19" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:317">JEV degraded / unavailable</span></td>
+              <td>Orchestrator reviews it fully (NEVER auto-pass).</td>
+            </tr>
+            <tr>
+              <td><span class="claim" data-claim="LG-20" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:323">Malformed answers</span></td>
+              <td>Orchestrator reviews it fully (six distinct malformed-* branches).</td>
+            </tr>
+            <tr>
+              <td><span class="claim" data-claim="LG-21" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:326">Any flag &gt; 0.55</span></td>
+              <td>NOT accept; orchestrator reviews (flag-first, the choice cannot override).</td>
+            </tr>
+            <tr>
+              <td><span class="claim" data-claim="LG-22" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:327">chosen-prob &lt; 0.60</span></td>
+              <td>Orchestrator reviews fully (the CHOSEN route option, not the max).</td>
+            </tr>
+            <tr>
+              <td><span class="claim" data-claim="LG-23" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:328">Any flag in 0.40&ndash;0.60</span></td>
+              <td>Orchestrator reviews fully (uncertain band).</td>
+            </tr>
+            <tr>
+              <td><span class="claim" data-claim="LG-24" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:329">Choice is not decisive</span></td>
+              <td>Orchestrator reviews fully (only accept / pass / verified / rework / rework-needed are decisive).</td>
+            </tr>
+            <tr>
+              <td><span class="claim" data-claim="LG-25" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:331">chosen-prob &lt; 0.80</span></td>
+              <td>Orchestrator reviews fully (below auto_apply).</td>
+            </tr>
+            <tr>
+              <td><span class="claim" data-claim="LG-26" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:332">else</span></td>
+              <td>Follow the JEV verdict.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-card">
+        <h3>Settle &amp; hard rules</h3>
+        <p>
+          Hard rule 2 is mechanical:
+          <span class="claim" data-claim="LG-27" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:485">never end a turn with a reclaimable or leaked Orca worker</span>,
+          run <code>fleet settle</code> after every gate decision.
+          <span class="claim" data-claim="LG-28" data-source="code" data-evidence="fleet/bin/fleet.mjs:169"><code>cmdSettle</code></span>
+          is the implementation; one run previously
+          <span class="claim" data-claim="LG-29" data-source="doc" data-evidence="fleet/bin/fleet.mjs:172">leaked 14 live claude processes / 4.4 GB before settle was made a command</span>.
+        </p>
+        <p>
+          The remaining hard rules:
+          <span class="claim" data-claim="LG-30" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:480">fleet first, never implement what the fleet can do</span>;
+          <span class="claim" data-claim="LG-31" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:483">never accept success from prose, reproduce the evidence</span>;
+          <span class="claim" data-claim="LG-32" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:484">never dispatch onto a dirty tree without a checkpoint</span>;
+          <span class="claim" data-claim="LG-33" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:486">never run concurrent writers in one workspace</span>;
+          <span class="claim" data-claim="LG-34" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:487">budget &mdash; G0 is advisory until calibrated</span>;
+          <span class="claim" data-claim="LG-35" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:490">irreversible actions are G4, the human decides</span>.
+        </p>
+      </div>
+
+      <div class="section-card">
+        <h3>Loop sequence</h3>
+        <p>
+          The sequence diagram below traces a single task end to end: the
+          orchestrator records a row, dispatches a worker, waits for
+          <code>worker_done</code>, runs a gate, and settles.
+        </p>
+        <div class="diagram-container" data-canvas="loopCanvas">
+          <div class="diagram-header">
+            <div class="diagram-title">One task through the loop</div>
+            <div class="diagram-controls">
+              <span class="zoom-indicator" data-zoom="loopCanvas">100%</span>
+              <button class="ctrl-btn" type="button" data-zoom-action="in"  data-canvas="loopCanvas" title="Zoom in">+</button>
+              <button class="ctrl-btn" type="button" data-zoom-action="out" data-canvas="loopCanvas" title="Zoom out">&minus;</button>
+              <button class="ctrl-btn" type="button" data-zoom-action="fit" data-canvas="loopCanvas" title="Fit">Fit</button>
+              <button class="ctrl-btn" type="button" data-zoom-action="reset" data-canvas="loopCanvas" title="Reset">1:1</button>
+            </div>
+          </div>
+          <div class="diagram-viewport" data-viewport="loopCanvas">
+              <div class="diagram-canvas" id="loopCanvas">
+<pre class="mermaid">
+sequenceDiagram
+    participant O as Orchestrator
+    participant R as Run store
+    participant W as Worker
+    participant J as JEV
+    O-&gt;&gt;R: append tasks.jsonl (base_sha)
+    O-&gt;&gt;W: dispatch (Agent / Orca)
+    W-&gt;&gt;R: write reports/X.md
+    W--&gt;&gt;O: worker_done (final reply)
+    O-&gt;&gt;J: askFromConfig(state)
+    J--&gt;&gt;O: gateVerdict {decided_by, verdict}
+    O-&gt;&gt;R: append gates.jsonl
+    O-&gt;&gt;O: cmdSettle (release reclaimable)
+</pre>
+              </div>
+              <div class="zoom-hint">Scroll to zoom &middot; drag to pan &middot; double-click to fit</div>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-pane" id="page-jev">
+      <div class="section-card">
+        <h2>JEV</h2>
+        <p>
+          JEV (TypeSafe System One) is a
+          <span class="claim" data-claim="JV-1" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:8">calibrated decision model, not a language model</span>.
+          It returns probabilities, never prose. The API exposes three
+          primitives:
+        </p>
+        <ul>
+          <li><span class="claim" data-claim="JV-2" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:40"><strong>noul</strong></span> &mdash; a yes/no probability (0&ndash;1; <span class="claim" data-claim="JV-3" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:40">0.5 = equal odds, not "medium"</span>; no bands inside it).</li>
+          <li><span class="claim" data-claim="JV-4" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:41"><strong>choice</strong></span> &mdash; which of N options, with an <span class="claim" data-claim="JV-5" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:99">always-included <code>none_fit</code> abstain option</span>.</li>
+          <li><span class="claim" data-claim="JV-6" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:42"><strong>score</strong></span> &mdash; a 2&ndash;10 level rubric whose criteria is an <span class="claim" data-claim="JV-7" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:42">ARRAY, not an object</span>.</li>
+        </ul>
+      </div>
+
+      <div class="section-card">
+        <h3>Measured thresholds</h3>
+        <p>
+          The thresholds the harness uses today:
+        </p>
+        <table>
+          <thead>
+            <tr><th>Threshold</th><th>Value</th><th>Source</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="claim" data-claim="JV-8" data-source="code" data-evidence="fleet/config.json:98"><code>flag</code></span></td>
+              <td>0.55</td>
+              <td><span class="claim" data-claim="JV-8b" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:75">Measured 12/12 at 0.50&ndash;0.60; 11/12 at 0.7</span></td>
+            </tr>
+            <tr>
+              <td><span class="claim" data-claim="JV-9" data-source="code" data-evidence="fleet/config.json:99"><code>abstain</code></span></td>
+              <td>0.60</td>
+              <td><span class="claim" data-claim="JV-9b" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:76">Single route error returned 0.28</span></td>
+            </tr>
+            <tr>
+              <td><span class="claim" data-claim="JV-10" data-source="code" data-evidence="fleet/config.json:100"><code>auto_apply</code></span></td>
+              <td>0.80</td>
+              <td><span class="claim" data-claim="JV-10b" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:77">"start conservative; lower as override rate falls"</span></td>
+            </tr>
+            <tr>
+              <td><span class="claim" data-claim="JV-11" data-source="code" data-evidence="fleet/config.json:101">uncertain_band</span></td>
+              <td>0.40&ndash;0.60</td>
+              <td><span class="claim" data-claim="JV-11b" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:78">Route to deeper review</span></td>
+            </tr>
+            <tr>
+              <td><span class="claim" data-claim="JV-12" data-source="code" data-evidence="fleet/config.json:135"><code>routing.auto_apply</code></span></td>
+              <td>0.65</td>
+              <td><span class="claim" data-claim="JV-12b" data-source="code" data-evidence="fleet/config.json:139">Calibrated on 2026-10-07 with 14 cases</span></td>
+            </tr>
+            <tr>
+              <td><span class="claim" data-claim="JV-13" data-source="code" data-evidence="fleet/config.json:136"><code>routing.abstain</code></span></td>
+              <td>0.60</td>
+              <td><span class="claim" data-claim="JV-13b" data-source="code" data-evidence="fleet/config.json:137">multi_threshold 0.65</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          <span class="claim" data-claim="JV-14" data-source="code" data-evidence="fleet/bin/lib/jev.mjs:114">The default values on <code>gateVerdict()</code></span>
+          mirror the config: flag 0.55, abstain 0.6, autoApply 0.8, band
+          <code>[0.4, 0.6]</code>, decisive <code>['accept','pass','verified','rework','rework-needed']</code>.
+        </p>
+      </div>
+
+      <div class="section-card">
+        <h3>The router</h3>
+        <p>
+          <span class="claim" data-claim="JV-15" data-source="code" data-evidence="fleet/bin/lib/jev-router.mjs:62"><code>skillCatalog(dirs)</code></span>
+          walks <code>&lt;dir&gt;/&lt;skill&gt;/SKILL.md</code> and lifts the
+          single-line <code>description:</code> frontmatter field. The shape is the
+          same as a JEV <code>choice</code> criteria object. <span class="claim" data-claim="JV-16" data-source="code" data-evidence="fleet/bin/lib/jev-router.mjs:89"><code>buildRouteQuestions({id, instructions, options, multi})</code></span>
+          builds one choice question plus (when <code>multi=true</code>) one noul per option, with a
+          <span class="claim" data-claim="JV-17" data-source="code" data-evidence="fleet/bin/lib/jev-router.mjs:101"><code>none_fit</code></span>
+          always-presented abstain. <span class="claim" data-claim="JV-18" data-source="code" data-evidence="fleet/bin/lib/jev-router.mjs:132"><code>routeDecision()</code></span>
+          resolves the answer and returns <code>decided_by</code>, the chosen probability, and (when calibrated) the multi list.
+        </p>
+        <p>
+          Calibration was measured at
+          <span class="claim" data-claim="JV-19" data-source="code" data-evidence="fleet/config.json:139">14 cases</span>
+          on
+          <span class="claim" data-claim="JV-20" data-source="code" data-evidence="fleet/config.json:138">2026-10-07</span>
+          with
+          <span class="claim" data-claim="JV-21" data-source="inferred">choice accuracy 92.9%</span>
+          (the 14/14 minus one &mdash; live-measured; see the orchestrator skill,
+          <span class="claim" data-claim="JV-22" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:286">section 5c recipe 1</span>).
+        </p>
+      </div>
+
+      <div class="section-card">
+        <h3>Deletion detection</h3>
+        <p>
+          JEV's <code>deleted_out_of_scope</code> noul is
+          <span class="claim" data-claim="JV-23" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:102">ADVISORY, not the deletion gate</span>.
+          The deterministic gate lives in code:
+          <span class="claim" data-claim="JV-24" data-source="code" data-evidence="fleet/bin/lib/jev-router.mjs:239"><code>parseDiff()</code></span>
+          parses a unified diff,
+          <span class="claim" data-claim="JV-25" data-source="code" data-evidence="fleet/bin/lib/jev-router.mjs:270"><code>deletedLines()</code></span>
+          flattens it, and
+          <span class="claim" data-claim="JV-26" data-source="code" data-evidence="fleet/bin/lib/jev-router.mjs:298"><code>unmatchedDeletions()</code></span>
+          drops every deletion that has a plausible rewrite in the same hunk
+          (polarity-guarded). <span class="claim" data-claim="JV-27" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:349"><code>deletionCheck()</code></span>
+          is the orchestrator-level wrapper that flags when the unmatched-line count and ratio both exceed the cut.
+        </p>
+      </div>
+
+      <div class="section-card">
+        <h3>Two measured incidents</h3>
+        <ul>
+          <li>
+            <span class="claim" data-claim="JV-28" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:276">Per-criterion nouls pinpointed WHICH criterion lacked evidence (0.56) on T4</span>;
+            the old generic "any unmet?" noul could not name the criterion.
+          </li>
+          <li>
+            <span class="claim" data-claim="JV-29" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:101">Generic <code>evidence_gap</code> fired on clean work at 0.63/0.73/0.69 (T7), 0.75 (T9), 0.47 (T1)</span>
+            while every per-criterion noul was &le; 0.20 &mdash; it reacted to
+            the NUMBER of side claims in a long report.
+          </li>
+          <li>
+            <span class="claim" data-claim="JV-30" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:102">JEV's <code>deleted_out_of_scope</code> noul scored 0.56 on a real T9 deletion but 0.64 on legitimate T1 rewrites</span>
+            &mdash; it cannot separate; the deterministic count can (T9 58/63,
+            T1 3/13, T2 1/6).
+          </li>
+          <li>
+            <span class="claim" data-claim="JV-31" data-source="inferred">A 41-line deletion outside scope was missed by the constraint noul (0.12) but flagged by the deterministic count</span> &mdash;
+            <span class="claim" data-claim="JV-32" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:347">the documented <code>grep "^-[^-]"</code> dropped 17 of 71 deletion lines, including section-6 ALWAYS rules</span>.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="page-pane" id="page-operations">
+      <div class="section-card">
+        <h2>Operations</h2>
+        <p>
+          Every command documented here is real &mdash; taken from
+          <code>node fleet/bin/fleet.mjs help</code> and verified to exist on
+          <code>2026-10-08</code> against
+          <span class="claim" data-claim="OP-1" data-source="code" data-evidence="fleet/bin/fleet.mjs:483"><code>help</code></span>.
+        </p>
+      </div>
+
+      <div class="section-card">
+        <h3>CLI command table</h3>
+        <table>
+          <thead>
+            <tr><th>Command</th><th>Effect</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>node fleet/bin/fleet.mjs status</code></td>
+              <td><span class="claim" data-claim="OP-2" data-source="code" data-evidence="fleet/bin/fleet.mjs:485">Orca + fleet state (flags reclaimable terminals)</span></td>
+            </tr>
+            <tr>
+              <td><code>node fleet/bin/fleet.mjs settle</code></td>
+              <td><span class="claim" data-claim="OP-3" data-source="code" data-evidence="fleet/bin/fleet.mjs:487">Release every reclaimable worker (hard rule 2)</span></td>
+            </tr>
+            <tr>
+              <td><code>node fleet/bin/fleet.mjs runs</code></td>
+              <td><span class="claim" data-claim="OP-4" data-source="code" data-evidence="fleet/bin/fleet.mjs:488">List runs</span></td>
+            </tr>
+            <tr>
+              <td><code>node fleet/bin/fleet.mjs report &lt;run-id&gt;</code></td>
+              <td><span class="claim" data-claim="OP-5" data-source="code" data-evidence="fleet/bin/fleet.mjs:489">Gate verdicts + summary</span></td>
+            </tr>
+            <tr>
+              <td><code>node fleet/bin/fleet.mjs timing [run-id]</code></td>
+              <td><span class="claim" data-claim="OP-6" data-source="code" data-evidence="fleet/bin/fleet.mjs:490">Where the time went (worker vs orchestrator)</span></td>
+            </tr>
+            <tr>
+              <td><code>node fleet/bin/fleet.mjs cost</code></td>
+              <td><span class="claim" data-claim="OP-7" data-source="code" data-evidence="fleet/bin/fleet.mjs:492">Today spend vs the daily cap</span></td>
+            </tr>
+            <tr>
+              <td><code>node fleet/bin/fleet.mjs estimate &lt;path..&gt;</code></td>
+              <td><span class="claim" data-claim="OP-8" data-source="code" data-evidence="fleet/bin/fleet.mjs:493">Pre-flight cost RANGE for a set of paths</span></td>
+            </tr>
+            <tr>
+              <td><code>node fleet/bin/fleet.mjs route "&lt;task&gt;"</code></td>
+              <td><span class="claim" data-claim="OP-9" data-source="code" data-evidence="fleet/bin/fleet.mjs:494">JEV skill-routing decision (one JSON line; exit 2 only if degraded)</span></td>
+            </tr>
+            <tr>
+              <td><code>node fleet/bin/fleet.mjs resume &lt;run-id&gt;</code></td>
+              <td><span class="claim" data-claim="OP-10" data-source="code" data-evidence="fleet/bin/fleet.mjs:495">Take the lease and reconcile state</span></td>
+            </tr>
+            <tr>
+              <td><code>node fleet/bin/fleet.mjs doctor</code></td>
+              <td><span class="claim" data-claim="OP-11" data-source="code" data-evidence="fleet/bin/fleet.mjs:496">Check the install</span></td>
+            </tr>
+            <tr>
+              <td><code>node fleet/bin/fleet.mjs doc-check &lt;html&gt; [--root &lt;dir&gt;]</code></td>
+              <td><span class="claim" data-claim="OP-12" data-source="code" data-evidence="fleet/bin/fleet.mjs:497">Validate a project-doc HTML and its evidence pointers</span></td>
+            </tr>
+            <tr>
+              <td><code>node fleet/bin/fleet.mjs doc-gap &lt;html&gt; &lt;review.json&gt;</code></td>
+              <td><span class="claim" data-claim="OP-13" data-source="code" data-evidence="fleet/bin/fleet.mjs:498">Human-vs-AI gap report (markdown)</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-card">
+        <h3>Test suites</h3>
+        <p>
+          Every <code>fleet/bin/*.test.mjs</code> exits 0. The counts below
+          were measured at doc-write time:
+        </p>
+        <table>
+          <thead>
+            <tr><th>Suite</th><th>Tests</th><th>Pass</th><th>Fail</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>cascade.test.mjs</td><td><span class="claim" data-claim="OP-14" data-source="inferred">10 tests (as of <code>a2d155e</code>, from <code>node fleet/bin/cascade.test.mjs</code>)</span></td><td>10</td><td>0</td></tr>
+            <tr><td>count.test.mjs</td><td><span class="claim" data-claim="OP-15" data-source="inferred">9 tests (as of <code>a2d155e</code>, from <code>node fleet/bin/count.test.mjs</code>)</span></td><td>9</td><td>0</td></tr>
+            <tr><td>doctor.test.mjs</td><td><span class="claim" data-claim="OP-16" data-source="inferred">24 tests (as of <code>a2d155e</code>, from <code>node fleet/bin/doctor.test.mjs</code>)</span></td><td>24</td><td>0</td></tr>
+            <tr><td>hello.test.mjs</td><td><span class="claim" data-claim="OP-17" data-source="inferred">4 tests (as of <code>a2d155e</code>, from <code>node fleet/bin/hello.test.mjs</code>)</span></td><td>4</td><td>0</td></tr>
+            <tr><td>jev-fallback.test.mjs</td><td><span class="claim" data-claim="OP-18" data-source="inferred">58 tests (as of <code>a2d155e</code>, from <code>node fleet/bin/jev-fallback.test.mjs</code>)</span></td><td>58</td><td>0</td></tr>
+            <tr><td>jev-router.test.mjs</td><td><span class="claim" data-claim="OP-19" data-source="inferred">99 tests (as of <code>a2d155e</code>, from <code>node fleet/bin/jev-router.test.mjs</code>)</span></td><td>99</td><td>0</td></tr>
+            <tr><td>project-doc.test.mjs</td><td><span class="claim" data-claim="OP-20" data-source="inferred">35 tests (as of <code>a2d155e</code>, from <code>node fleet/bin/project-doc.test.mjs</code>)</span></td><td>35</td><td>0</td></tr>
+            <tr><td>reviewer-isolation.test.mjs</td><td><span class="claim" data-claim="OP-21" data-source="inferred">1 run, 0 breaches (as of <code>a2d155e</code>, from <code>node fleet/bin/reviewer-isolation.test.mjs</code>)</span></td><td>1</td><td>0</td></tr>
+            <tr><td>settle.test.mjs</td><td><span class="claim" data-claim="OP-22" data-source="inferred">35 tests (as of <code>a2d155e</code>, from <code>node fleet/bin/settle.test.mjs</code>)</span></td><td>35</td><td>0</td></tr>
+            <tr><td>skill-doc.test.mjs</td><td><span class="claim" data-claim="OP-23" data-source="inferred">9 tests (as of <code>a2d155e</code>, from <code>node fleet/bin/skill-doc.test.mjs</code>)</span></td><td>9</td><td>0</td></tr>
+          </tbody>
+        </table>
+        <p>
+          Total: <span class="claim" data-claim="OP-24" data-source="inferred">284 tests, all passing (as of <code>a2d155e</code>)</span> (sum of the ten suites above).
+        </p>
+      </div>
+
+      <div class="section-card">
+        <h3>Config keys that matter</h3>
+        <ul>
+          <li><span class="claim" data-claim="OP-25" data-source="code" data-evidence="fleet/config.json:3"><code>mode</code></span> &mdash; currently <code>"auto"</code>; the <code>modes</code> object lists which gates run.</li>
+          <li><span class="claim" data-claim="OP-26" data-source="code" data-evidence="fleet/config.json:24"><code>irreversible_actions</code></span> &mdash; <code>deploy, push, force-push, delete-data, infra-change, spend-above-cap</code> (G4).</li>
+          <li><span class="claim" data-claim="OP-27" data-source="code" data-evidence="fleet/config.json:33"><code>budget.daily_cap</code></span> &mdash; null = UNC ALIBRATED, G0 is advisory.</li>
+          <li><span class="claim" data-claim="OP-28" data-source="code" data-evidence="fleet/config.json:92"><code>jev.model</code></span> &mdash; <code>"jev-1-13-free"</code>.</li>
+          <li><span class="claim" data-claim="OP-29" data-source="code" data-evidence="fleet/config.json:118"><code>jev.providers</code></span> &mdash; primary <jev-host> + OpenRouter fallback (metered).</li>
+          <li><span class="claim" data-claim="OP-30" data-source="code" data-evidence="fleet/config.json:134"><code>jev.routing</code></span> &mdash; the calibrated thresholds.</li>
+          <li><span class="claim" data-claim="OP-31" data-source="code" data-evidence="fleet/config.json:143"><code>gates_jev</code></span> &mdash; which gates route to JEV.</li>
+        </ul>
+      </div>
+
+      <div class="section-card">
+        <h3>Known failure modes</h3>
+        <ul>
+          <li>
+            <span class="claim" data-claim="OP-32" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:191">Orca <code>worker-start</code> fails with <code>consumer_fenced</code></span>
+            when the orchestrator has not run <code>run-create</code> for this session.
+          </li>
+          <li>
+            <span class="claim" data-claim="OP-33" data-source="code" data-evidence="fleet/bin/lib/jev.mjs:72">JEV <code>429</code> / <code>529</code> responses retry once then degrade</span>;
+            <span class="claim" data-claim="OP-34" data-source="code" data-evidence="fleet/bin/lib/jev.mjs:99">three consecutive failures open the per-provider circuit breaker</span>
+            for 5 minutes so later gates short-circuit.
+          </li>
+          <li>
+            <span class="claim" data-claim="OP-35" data-source="code" data-evidence="fleet/bin/lib/doctor.mjs:46"><code>.cmd</code> / <code>.bat</code> files are NOT runnable by Node 24 <code>execFileSync</code></span>;
+            <span class="claim" data-claim="OP-36" data-source="code" data-evidence="fleet/bin/lib/doctor.mjs:69"><code>commandResolves()</code></span>
+            refuses to mark a batch file as resolved so <code>doctor</code> does
+            not lie.
+          </li>
+          <li>
+            <span class="claim" data-claim="OP-37" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:177">Subagents die with the session</span>;
+            there is no <code>fleet resume</code> path for them &mdash; the
+            orchestrator checks <code>git log</code> against the row's
+            <code>base_sha</code> and re-dispatches with <code>rework_of</code>.
+          </li>
+          <li>
+            <span class="claim" data-claim="OP-38" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:175">Subagents inherit the session's bypass permissions</span> &mdash; the orchestrator's own
+            <code>git diff</code> / <code>git status</code> at every gate is the
+            backstop, not a prevention.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="page-pane" id="page-reference">
+      <div class="section-card">
+        <h2>Glossary</h2>
+        <table>
+          <thead>
+            <tr><th>Term</th><th>Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>gate</strong></td>
+              <td><span class="claim" data-claim="RF-1" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:13">A decision point between steps (G0 budget, G1 plan, G2 build, G3 verify, G4 irreversible)</span></td>
+            </tr>
+            <tr>
+              <td><strong>noul</strong></td>
+              <td><span class="claim" data-claim="RF-2" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:40">A yes/no probability from JEV (0&ndash;1; 0.5 = equal odds)</span></td>
+            </tr>
+            <tr>
+              <td><strong>choice</strong></td>
+              <td><span class="claim" data-claim="RF-3" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:41">JEV question over N options (object criteria, always with <code>none_fit</code>)</span></td>
+            </tr>
+            <tr>
+              <td><strong>score</strong></td>
+              <td><span class="claim" data-claim="RF-4" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:42">JEV rubric over an ARRAY criteria; 2&ndash;10 levels</span></td>
+            </tr>
+            <tr>
+              <td><strong>claim</strong></td>
+              <td><span class="claim" data-claim="RF-5" data-source="code" data-evidence="fleet/bin/lib/project-doc.mjs:69">A span tagged <code>class="claim"</code> with <code>data-claim</code>, <code>data-source</code>, and <code>data-evidence</code></span></td>
+            </tr>
+            <tr>
+              <td><strong>worker_done</strong></td>
+              <td><span class="claim" data-claim="RF-6" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:164-205">For a subagent, the agent's final reply; for Orca, the <code>worker_done</code> event in <code>check --wait</code></span></td>
+            </tr>
+            <tr>
+              <td><strong>reclaimable</strong></td>
+              <td><span class="claim" data-claim="RF-7" data-source="code" data-evidence="fleet/bin/lib/orca.mjs:73">An Orca worker in <code>terminalState: 'reclaimable'</code></span> &mdash; <code>fleet settle</code> releases it.</td>
+            </tr>
+            <tr>
+              <td><strong>settle</strong></td>
+              <td><span class="claim" data-claim="RF-8" data-source="code" data-evidence="fleet/bin/fleet.mjs:178">Release every reclaimable worker; archive-then-close live <code>user_takeover</code> leaks</span></td>
+            </tr>
+            <tr>
+              <td><strong>escalation</strong></td>
+              <td><span class="claim" data-claim="RF-9" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:275">A branch in <code>routeDecision()</code> or <code>gateVerdict()</code> where <code>decided_by !== 'jev'</code>'</span></td>
+            </tr>
+            <tr>
+              <td><strong>G0&ndash;G4</strong></td>
+              <td><span class="claim" data-claim="RF-10" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:13">Five gates the loop runs (G4 human only)</span></td>
+            </tr>
+            <tr>
+              <td><strong>JEV</strong></td>
+              <td><span class="claim" data-claim="RF-11" data-source="doc" data-evidence="fleet/config.json:91">TypeSafe System One &mdash; <code>https://<jev-host>.id/v1/systemone</code></span></td>
+            </tr>
+            <tr>
+              <td><strong>Orca</strong></td>
+              <td><span class="claim" data-claim="RF-12" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:180">The persistent orchestration runtime that survives the Claude session</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-card">
+        <h3>File map</h3>
+        <table>
+          <thead>
+            <tr><th>Path</th><th>One-line purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>QUICKSTART.md</code></td>
+              <td><span class="claim" data-claim="RF-14" data-source="doc" data-evidence="QUICKSTART.md:1">User-facing quick reference for running the fleet</span></td>
+            </tr>
+            <tr>
+              <td><code>.claude/skills/fleet-orchestrator/SKILL.md</code></td>
+              <td><span class="claim" data-claim="RF-15" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:3">The full orchestrator contract (sections 0&ndash;10 + hard rules)</span></td>
+            </tr>
+            <tr>
+              <td><code>.claude/skills/fleet-engineer/SKILL.md</code></td>
+              <td><span class="claim" data-claim="RF-16" data-source="doc" data-evidence=".claude/skills/fleet-engineer/SKILL.md:3">Engineer worker &mdash; "implement exactly one task spec"</span></td>
+            </tr>
+            <tr>
+              <td><code>.claude/skills/fleet-tester/SKILL.md</code></td>
+              <td><span class="claim" data-claim="RF-17" data-source="doc" data-evidence=".claude/skills/fleet-tester/SKILL.md:3">Tester worker &mdash; verify the engineer's commit against the spec</span></td>
+            </tr>
+            <tr>
+              <td><code>.claude/skills/fleet-planner/SKILL.md</code></td>
+              <td><span class="claim" data-claim="RF-18" data-source="doc" data-evidence=".claude/skills/fleet-planner/SKILL.md:3">Planner worker &mdash; emit specs the engineers can execute</span></td>
+            </tr>
+            <tr>
+              <td><code>.claude/skills/fleet-devops/SKILL.md</code></td>
+              <td><span class="claim" data-claim="RF-19" data-source="doc" data-evidence=".claude/skills/fleet-devops/SKILL.md:3">Devops worker &mdash; build, release, deploy, rollback, infra</span></td>
+            </tr>
+            <tr>
+              <td><code>.claude/skills/jev-scoring/SKILL.md</code></td>
+              <td><span class="claim" data-claim="RF-20" data-source="doc" data-evidence=".claude/skills/jev-scoring/SKILL.md:3">How to score anything with JEV / SystemOne</span></td>
+            </tr>
+            <tr>
+              <td><code>fleet/config.json</code></td>
+              <td><span class="claim" data-claim="RF-21" data-source="code" data-evidence="fleet/config.json:2">Fleet policy &mdash; gates, budget, model slots, providers</span></td>
+            </tr>
+            <tr>
+              <td><code>fleet/bin/fleet.mjs</code></td>
+              <td><span class="claim" data-claim="RF-22" data-source="code" data-evidence="fleet/bin/fleet.mjs:501">CLI entry point (status / settle / runs / report / timing / score / cost / estimate / route / resume / doctor / doc-check / doc-gap / doc-drift)</span></td>
+            </tr>
+            <tr>
+              <td><code>fleet/bin/lib/jev.mjs</code></td>
+              <td><span class="claim" data-claim="RF-23" data-source="code" data-evidence="fleet/bin/lib/jev.mjs:1">JEV client + <code>gateVerdict()</code> policy</span></td>
+            </tr>
+            <tr>
+              <td><code>fleet/bin/lib/jev-router.mjs</code></td>
+              <td><span class="claim" data-claim="RF-24" data-source="code" data-evidence="fleet/bin/lib/jev-router.mjs:1">Skill catalog + question builders + deletion detection</span></td>
+            </tr>
+            <tr>
+              <td><code>fleet/bin/lib/orca.mjs</code></td>
+              <td><span class="claim" data-claim="RF-25" data-source="code" data-evidence="fleet/bin/lib/orca.mjs:1">Orca binary resolution + settleSnapshot</span></td>
+            </tr>
+            <tr>
+              <td><code>fleet/bin/lib/doctor.mjs</code></td>
+              <td><span class="claim" data-claim="RF-26" data-source="code" data-evidence="fleet/bin/lib/doctor.mjs:1">Pure FS + command checks for <code>fleet doctor</code></span></td>
+            </tr>
+            <tr>
+              <td><code>fleet/bin/lib/project-doc.mjs</code></td>
+              <td><span class="claim" data-claim="RF-27" data-source="code" data-evidence="fleet/bin/lib/project-doc.mjs:1">Pure helpers behind this doc &mdash; <code>extractClaims</code>, <code>validateDoc</code>, <code>gapReport</code></span></td>
+            </tr>
+            <tr>
+              <td><code>fleet/templates/project-doc.template.html</code></td>
+              <td><span class="claim" data-claim="RF-28" data-source="doc" data-evidence="fleet/bin/fleet.mjs:370">The reusable template this doc was patterned on</span></td>
+            </tr>
+            <tr>
+              <td><code>fleet/runs/&lt;run-id&gt;/</code></td>
+              <td><span class="claim" data-claim="RF-29" data-source="doc" data-evidence=".claude/skills/fleet-orchestrator/SKILL.md:76">Per-run store &mdash; <code>run.json</code>, <code>tasks.jsonl</code>, <code>gates.jsonl</code>, <code>reports/</code>, <code>summary.md</code></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="claim-popover" id="claimPopover" role="dialog" aria-label="Claim details"></div>
+
+<footer>
+  Generated by <code>fleet engineer (T2-fleet-doc, run 20261008-0135-project-doc)</code>. Offline-capable except the two CDN scripts (Mermaid + svg-pan-zoom).
+</footer>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---------- Theme -------------------------------------------------------
+  // localStorage may throw in private windows, embedded webviews, or when
+  // storage is full - the page must not break, only lose persistence.
+  var storage = (function () {
+    var s = {};
+    var test;
+    try { test = '__t__'; localStorage.setItem(test, test); localStorage.removeItem(test); s.ok = true; }
+    catch (e) { s.ok = false; }
+    return s;
+  })();
+
+  function lsGet(k, d) { try { var v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+
+  var themeToggle = document.getElementById('themeToggle');
+  var themeIcon = document.getElementById('themeIcon');
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    if (themeIcon) themeIcon.innerHTML = t === 'dark' ? '&#9788;' : '&#9790;';
+    lsSet('pd_theme', t);
+  }
+  setTheme(lsGet('pd_theme', 'dark'));
+  if (themeToggle) themeToggle.addEventListener('click', function () {
+    var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+    setTheme(cur === 'dark' ? 'light' : 'dark');
+  });
+
+  // ---------- Mermaid -----------------------------------------------------
+  // Initialised lazily so the theme attribute is settled first. Renders only
+  // when its parent tab becomes visible.
+  function initMermaid() {
+    if (!window.mermaid) return;
+    var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    try {
+      mermaid.initialize({ startOnLoad: false, theme: isDark ? 'dark' : 'default', securityLevel: 'loose' });
+    } catch (e) { /* silent */ }
+  }
+  function renderMermaidIn(container) {
+    if (!window.mermaid) return;
+    var blocks = container.querySelectorAll('pre.mermaid:not([data-processed="true"])');
+    if (!blocks.length) return;
+    // Skip rendering if the container has zero box dimensions: Mermaid's
+    // layout runs over an unmeasurable area and emits `translate(undefined,
+    // NaN)` for node groups, flooding the console. The sidebar/tab handler
+    // re-calls renderMermaidIn once the pane becomes visible.
+    var cBox = container.getBoundingClientRect ? container.getBoundingClientRect() : null;
+    if (cBox && (!(cBox.width > 0) || !(cBox.height > 0))) return;
+    var promise;
+    try {
+      promise = mermaid.run({ nodes: Array.from(blocks) });
+    } catch (e) { /* leave as <pre> */ return Promise.resolve(); }
+    return Promise.resolve(promise).then(function () {
+      blocks.forEach(function (p) {
+        var svg = p.querySelector('svg');
+        if (svg) {
+          svg.style.maxWidth = 'none';
+          svg.style.maxHeight = 'none';
+          svg.replaceWith(svg);
+        }
+      });
+      initPanZoomIn(container);
+    }).catch(function () { /* leave as <pre> */ });
+  }
+
+  // ---------- svg-pan-zoom wiring ------------------------------------------
+  // One svgPanZoom instance per .diagram-canvas (keyed by id). Re-entry on
+  // the same canvas must not double-bind: we tear down the previous instance
+  // and rebind fresh buttons. If svgPanZoom is missing (CDN down / offline),
+  // the page must still render: the <pre.mermaid> stays readable as code and
+  // a small inline note is shown so the controls do not appear broken.
+  var panZoomInstances = Object.create(null);
+  var panZoomBound = Object.create(null);
+
+  function ensureFallback(canvas) {
+    if (!canvas) return;
+    var container = canvas.closest('.diagram-container');
+    if (!container) return;
+    if (container.querySelector('.diagram-fallback')) return;
+    var note = document.createElement('div');
+    note.className = 'diagram-fallback';
+    note.innerHTML = '<strong>Diagram source.</strong> Mermaid or svg-pan-zoom '
+      + 'failed to load (offline / CDN blocked). The block above shows the raw <code>'
+      + canvas.id + '</code> mermaid source so the contract is still readable.';
+    container.appendChild(note);
+  }
+
+  function initPanZoomIn(container) {
+    if (!container) return;
+    var canvases = container.querySelectorAll('.diagram-canvas');
+    for (var i = 0; i < canvases.length; i++) {
+      var canvas = canvases[i];
+      if (!canvas.id) continue;
+      // If svgPanZoom never loaded, the <pre> remains visible (CSS keeps it
+      // padded + readable). Wire nothing and show the fallback note.
+      if (!window.svgPanZoom) { ensureFallback(canvas); continue; }
+      // Tear down a previous instance on the same canvas so re-entry is safe.
+      var prev = panZoomInstances[canvas.id];
+      if (prev && typeof prev.destroy === 'function') {
+        try { prev.destroy(); } catch (e) { /* best-effort */ }
+      }
+      panZoomInstances[canvas.id] = null;
+      var svg = canvas.querySelector('svg');
+      if (!svg) { ensureFallback(canvas); continue; }
+      svg.style.maxWidth = 'none';
+      svg.style.width = '100%';
+      svg.style.height = '100%';
+      // If the canvas's parent pane is hidden (display: none), the box
+      // measures 0x0. svg-pan-zoom would emit `translate(undefined, NaN)`
+      // and flood the console. Mark this canvas as pending and let the
+      // sidebar/tab activation re-trigger init once the pane is shown.
+      var box = canvas.getBoundingClientRect();
+      if (!(box.width > 0) || !(box.height > 0)) {
+        canvas.setAttribute('data-pz-pending', 'true');
+        continue;
+      }
+      var viewport = canvas.closest('[data-viewport]') || canvas.parentElement;
+      var pz = null;
+      try {
+        pz = svgPanZoom(svg, {
+          zoomEnabled: true,
+          controlIconsEnabled: false,
+          fit: true,
+          center: true,
+          minZoom: 0.1,
+          maxZoom: 25,
+          zoomScaleSensitivity: 0.25,
+          mouseWheelZoomEnabled: true,
+          dblClickZoomEnabled: false,
+          onZoom: function (scale) {
+            var ind = document.querySelector('[data-zoom="' + canvas.id + '"]');
+            if (ind) ind.textContent = Math.round(scale * 100) + '%';
+          },
+        });
+      } catch (err) {
+        ensureFallback(canvas);
+        continue;
+      }
+      panZoomInstances[canvas.id] = pz;
+      try { pz.resize(); pz.fit(); pz.center(); } catch (e) { /* best-effort */ }
+      var ind0 = document.querySelector('[data-zoom="' + canvas.id + '"]');
+      if (ind0) ind0.textContent = Math.round(pz.getZoom() * 100) + '%';
+      // Bind the controls exactly once per container, reusing if already wired.
+      var containerEl = canvas.closest('.diagram-container');
+      if (containerEl && !panZoomBound[containerEl.dataset.canvas || canvas.id]) {
+        bindDiagramControls(containerEl, canvas.id);
+        if (viewport && !viewport.__pzDbl) {
+          viewport.__pzDbl = true;
+          viewport.addEventListener('dblclick', function () {
+            var inst = panZoomInstances[canvas.id];
+            if (!inst) return;
+            try { inst.reset(); inst.fit(); inst.center(); } catch (e) { /* best-effort */ }
+          });
+        }
+        panZoomBound[containerEl.dataset.canvas || canvas.id] = true;
+      }
+    }
+  }
+
+  function bindDiagramControls(containerEl, canvasId) {
+    var ind = containerEl.querySelector('[data-zoom="' + canvasId + '"]');
+    var buttons = containerEl.querySelectorAll('[data-zoom-action]');
+    buttons.forEach(function (btn) {
+      if (btn.__pzBound) return;
+      btn.__pzBound = true;
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        var inst = panZoomInstances[canvasId];
+        if (!inst) return;
+        var action = btn.getAttribute('data-zoom-action');
+        try {
+          if (action === 'in') inst.zoomBy(1.25);
+          else if (action === 'out') inst.zoomBy(0.8);
+          else if (action === 'fit') { inst.reset(); inst.fit(); inst.center(); }
+          else if (action === 'reset') { inst.reset(); }
+          if (ind) ind.textContent = Math.round(inst.getZoom() * 100) + '%';
+        } catch (err) { /* best-effort */ }
+      });
+    });
+  }
+
+  // ---------- Page + tab navigation --------------------------------------
+  var sideBtns = document.querySelectorAll('.side-btn');
+  var pagePanes = document.querySelectorAll('.page-pane');
+  sideBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      sideBtns.forEach(function (b) { b.classList.remove('active'); });
+      pagePanes.forEach(function (p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      var target = document.getElementById('page-' + btn.getAttribute('data-page'));
+      if (target) {
+        target.classList.add('active');
+        renderMermaidIn(target);
+        // Pane just became visible. If a canvas was deferred at load (the
+        // pane was display:none, box was 0x0), wire it up now that it has
+        // a measurable box.
+        initPanZoomIn(target);
+      }
+    });
+  });
+  document.querySelectorAll('.page-pane').forEach(function (p) {
+    p.addEventListener('click', function (e) {
+      var t = e.target.closest('.tab-btn');
+      if (!t || !p.contains(t)) return;
+      var btns = p.querySelectorAll('.tab-btn');
+      var panes = p.querySelectorAll('.tab-pane');
+      btns.forEach(function (b) { b.classList.remove('active'); });
+      panes.forEach(function (x) { x.classList.remove('active'); });
+      t.classList.add('active');
+      var tgt = document.getElementById('tab-' + t.getAttribute('data-tab'));
+      if (tgt) { tgt.classList.add('active'); renderMermaidIn(tgt); initPanZoomIn(tgt); }
+    });
+  });
+
+  // ---------- Claim popover + review state --------------------------------
+  // Reviews live in localStorage under a key the page-specific project/doc
+  // version pins down. Importing a review.json merges into that key; the
+  // page must keep working when storage is unavailable.
+  var meta = (function () {
+    var el = document.getElementById('doc-meta');
+    if (!el) return { project: 'unknown', doc_version: '0' };
+    try { return JSON.parse(el.textContent || '{}'); }
+    catch (e) { return { project: 'unknown', doc_version: '0' }; }
+  })();
+  function reviewKey() { return 'pd_review_' + meta.project + '_v' + meta.doc_version; }
+
+  var reviews = {}; // id -> { verdict, note }
+  try {
+    var raw = lsGet(reviewKey(), null);
+    if (raw) {
+      var parsed = JSON.parse(raw);
+      if (parsed && parsed.reviews) parsed.reviews.forEach(function (r) {
+        if (r && r.id) reviews[r.id] = { verdict: r.verdict, note: r.note || '' };
+      });
+    }
+  } catch (e) { /* leave reviews empty */ }
+
+  function saveReviews() {
+    var rows = Object.keys(reviews).map(function (id) {
+      return { id: id, verdict: reviews[id].verdict, note: reviews[id].note || '' };
+    });
+    var payload = {
+      project: meta.project, doc_version: meta.doc_version,
+      reviewer: meta.reviewer || 'anonymous',
+      reviewed_at: new Date().toISOString(),
+      reviews: rows,
+    };
+    lsSet(reviewKey(), JSON.stringify(payload));
+    refreshClaimStyling();
+    refreshSummary();
+  }
+
+  function refreshSummary() {
+    var claims = document.querySelectorAll('.claim[data-claim]');
+    var total = claims.length, reviewed = 0, agree = 0, wrong = 0, unsure = 0;
+    claims.forEach(function (c) {
+      var r = reviews[c.getAttribute('data-claim')];
+      if (r) {
+        reviewed++;
+        if (r.verdict === 'agree') agree++;
+        else if (r.verdict === 'wrong') wrong++;
+        else if (r.verdict === 'unsure') unsure++;
+      }
+    });
+    document.getElementById('reviewSummary').textContent = 'reviewed ' + reviewed + '/' + total;
+    document.getElementById('reviewAgree').textContent   = 'agree ' + agree;
+    document.getElementById('reviewWrong').textContent   = 'wrong ' + wrong;
+    document.getElementById('reviewUnsure').textContent  = 'unsure ' + unsure;
+  }
+
+  function refreshClaimStyling() {
+    document.querySelectorAll('.claim[data-claim]').forEach(function (c) {
+      var r = reviews[c.getAttribute('data-claim')];
+      if (r) c.setAttribute('data-verdict', r.verdict);
+      else c.removeAttribute('data-verdict');
+    });
+  }
+
+  // Popover: a single floating panel positioned next to the clicked claim.
+  // We move the panel through the DOM only once and reuse it; its content is
+  // rebuilt per claim so the note textarea always tracks the current id.
+  var popover = document.getElementById('claimPopover');
+  var currentId = null;
+  // The .claim element that opened the popover. Escape uses it to restore
+  // focus so keyboard reviewers do not lose their place after dismissing.
+  var currentOpener = null;
+
+  function buildPopover(claim) {
+    var id = claim.getAttribute('data-claim') || '';
+    var src = claim.getAttribute('data-source') || '';
+    var ev = claim.getAttribute('data-evidence') || '';
+    var note = (reviews[id] && reviews[id].note) || '';
+    var verdict = reviews[id] && reviews[id].verdict;
+    var srcBadge = '<span class="badge badge-' + src + '">' + src + '</span>';
+    var evHtml = ev ? '<div class="pop-evidence">' + escapeHtml(ev) + '</div>' : '<div class="pop-evidence"><em>no evidence (inferred)</em></div>';
+    popover.innerHTML =
+      '<div class="pop-row"><span class="pop-label">id</span><span class="pop-id">' + escapeHtml(id) + '</span></div>' +
+      '<div class="pop-row"><span class="pop-label">source</span>' + srcBadge + '</div>' +
+      '<div class="pop-row"><span class="pop-label">evidence</span></div>' + evHtml +
+      '<div class="pop-row pop-verdict" data-pop-verdict>' +
+        '<button type="button" data-v="agree"  class="v-agree '  + (verdict === 'agree'  ? 'active' : '') + '">Agree</button>' +
+        '<button type="button" data-v="wrong"  class="v-wrong '  + (verdict === 'wrong'  ? 'active' : '') + '">Wrong</button>' +
+        '<button type="button" data-v="unsure" class="v-unsure ' + (verdict === 'unsure' ? 'active' : '') + '">Unsure</button>' +
+      '</div>' +
+      '<textarea data-pop-note placeholder="note (optional)">' + escapeHtml(note) + '</textarea>';
+    currentId = id;
+    // Wire up the verdict buttons and note.
+    popover.querySelectorAll('[data-v]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (!currentId) return;
+        var v = btn.getAttribute('data-v');
+        reviews[currentId] = { verdict: v, note: (reviews[currentId] && reviews[currentId].note) || '' };
+        saveReviews();
+        // Recording a verdict closes the popover. The verdict is now on the
+        // claim and persists to localStorage; reopening the same claim shows
+        // the verdict already set. Leaving the popover open after a verdict
+        // click intercepts pointer events and blocks the next claim click.
+        closePopover();
+      });
+    });
+    var ta = popover.querySelector('[data-pop-note]');
+    ta.addEventListener('input', function () {
+      if (!currentId) return;
+      var v = reviews[currentId] ? reviews[currentId].verdict : null;
+      reviews[currentId] = { verdict: v, note: ta.value };
+      saveReviews();
+    });
+  }
+
+  function positionPopover(claim) {
+    var r = claim.getBoundingClientRect();
+    popover.style.left = Math.min(window.innerWidth - 340, Math.max(8, r.left)) + 'px';
+    popover.style.top  = (window.scrollY + r.bottom + 6) + 'px';
+  }
+
+  function openPopover(claim) {
+    // The opener must be focusable so closePopover({focusOpener:true}) can
+    // restore keyboard focus after Escape. Claims are <span> elements, which
+    // are not focusable by default in HTML5; a one-time tabindex="-1" is
+    // the smallest change that makes the opener a valid focus target.
+    if (!claim.hasAttribute('tabindex')) claim.setAttribute('tabindex', '-1');
+    buildPopover(claim);
+    positionPopover(claim);
+    currentOpener = claim;
+    popover.classList.add('open');
+  }
+  // opts.focusOpener = true restores focus to the claim that opened the
+  // popover. Used by Escape; click-outside and focusout use the default
+  // (no focus theft) because the user has already moved on.
+  function closePopover(opts) {
+    if (!popover.classList.contains('open')) {
+      currentOpener = null;
+      return;
+    }
+    popover.classList.remove('open');
+    currentId = null;
+    var opener = currentOpener;
+    currentOpener = null;
+    if (opts && opts.focusOpener && opener && document.contains(opener)) {
+      try { opener.focus(); } catch (_) { /* element gone */ }
+    }
+  }
+
+  // Click on a claim opens the popover; clicks elsewhere close it.
+  document.addEventListener('click', function (e) {
+    var claim = e.target.closest('.claim[data-claim]');
+    if (claim) { e.stopPropagation(); openPopover(claim); return; }
+    if (!popover.contains(e.target)) closePopover();
+  });
+
+  // Escape dismisses the popover and returns focus to the claim that opened
+  // it so a keyboard reviewer can move on with arrow keys / Tab.
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && popover.classList.contains('open')) {
+      e.preventDefault();
+      closePopover({ focusOpener: true });
+    }
+  });
+
+  // focusout bubbles in modern browsers, so listening on the popover catches
+  // focus leaving any descendant. If the new focus target is outside the
+  // popover, dismiss it; otherwise the reviewer is still interacting inside
+  // (e.g. tabbing from a verdict button to the textarea) - leave it open.
+  // `relatedTarget` is null when focus moves to the document body, which is
+  // also "left the popover" and should close it. We skip the close when the
+  // next focus target is another claim, since the document.click handler will
+  // reopen the popover for it (a click on a claim moves focus on mousedown,
+  // so focusout fires BEFORE click - deferring would race).
+  popover.addEventListener('focusout', function (e) {
+    if (!popover.classList.contains('open')) return;
+    var next = e.relatedTarget;
+    if (next && popover.contains(next)) return;
+    if (next && next.closest && next.closest('.claim[data-claim]')) return;
+    closePopover();
+  });
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
+  function cssEscape(s) {
+    if (window.CSS && CSS.escape) return CSS.escape(s);
+    return String(s).replace(/[^a-zA-Z0-9_-]/g, function (c) { return '\\' + c; });
+  }
+
+  // ---------- Review mode toggle -----------------------------------------
+  var reviewToggle = document.getElementById('reviewToggle');
+  function setReviewMode(on) {
+    document.body.classList.toggle('review-mode', !!on);
+    if (reviewToggle) {
+      reviewToggle.classList.toggle('active', !!on);
+      reviewToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      reviewToggle.textContent = 'Review: ' + (on ? 'on' : 'off');
+    }
+  }
+  if (reviewToggle) reviewToggle.addEventListener('click', function () {
+    var on = !document.body.classList.contains('review-mode');
+    setReviewMode(on);
+    if (!on) closePopover();
+  });
+
+  // ---------- Export / Import --------------------------------------------
+  function exportReview() {
+    var rows = Object.keys(reviews).map(function (id) {
+      return { id: id, verdict: reviews[id].verdict, note: reviews[id].note || '' };
+    });
+    var payload = {
+      project: meta.project, doc_version: meta.doc_version,
+      reviewer: meta.reviewer || 'anonymous',
+      reviewed_at: new Date().toISOString(),
+      reviews: rows,
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'review-' + meta.project + '-v' + meta.doc_version + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  function importReview(payload) {
+    if (!payload || !Array.isArray(payload.reviews)) { alert('invalid review.json'); return; }
+    payload.reviews.forEach(function (r) {
+      if (r && r.id && ['agree', 'wrong', 'unsure'].includes(r.verdict)) {
+        reviews[r.id] = { verdict: r.verdict, note: r.note || '' };
+      }
+    });
+    saveReviews();
+    closePopover();
+  }
+
+  document.getElementById('reviewExport').addEventListener('click', exportReview);
+  var importBtn = document.getElementById('reviewImport');
+  var importFile = document.getElementById('reviewImportFile');
+  if (importBtn) importBtn.addEventListener('click', function () { importFile.click(); });
+  if (importFile) importFile.addEventListener('change', function () {
+    var f = importFile.files && importFile.files[0];
+    if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      try { importReview(JSON.parse(r.result)); }
+      catch (e) { alert('invalid review.json'); }
+    };
+    r.readAsText(f);
+  });
+
+  // ---------- Metrics -----------------------------------------------------
+  var claims = document.querySelectorAll('.claim[data-claim]');
+  var sourced = 0, inferred = 0;
+  claims.forEach(function (c) {
+    var s = c.getAttribute('data-source');
+    if (s === 'inferred') inferred++;
+  });
+  // sourced == claims that have a data-evidence attribute
+  claims.forEach(function (c) { if (c.hasAttribute('data-evidence')) sourced++; });
+  document.getElementById('metricClaims').textContent    = claims.length;
+  document.getElementById('metricSourced').textContent   = sourced.toString();
+  document.getElementById('metricInferred').textContent  = inferred.toString();
+
+  refreshClaimStyling();
+  refreshSummary();
+  initMermaid();
+  // Render mermaid blocks already on the active page on load.
+  var initialPane = document.querySelector('.page-pane.active');
+  if (initialPane) renderMermaidIn(initialPane);
+  // Also eagerly render the diagrams on the other top-level pages so the
+  // first click on the Architecture / Flows sidebar has no flicker.
+  pagePanes.forEach(function (p) {
+    if (p.classList.contains('active')) return;
+    renderMermaidIn(p);
+  });
+})();
+</script>
+</body>
+</html>

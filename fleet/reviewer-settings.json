@@ -1,0 +1,16 @@
+{
+  "_comment": "Claude Code settings for REVIEW-ONLY fleet dispatches. Placed at <worktree>/.claude/settings.local.json before a reviewer is dispatched, so the role boundary is enforced by the harness rather than requested in prose. See spec section 15b.",
+  "permissions": {
+    "deny": [
+      "Write",
+      "Edit",
+      "NotebookEdit",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git reset:*)",
+      "Bash(git checkout:*)",
+      "Bash(git restore:*)"
+    ]
+  }
+}

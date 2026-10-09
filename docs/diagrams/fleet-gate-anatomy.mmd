@@ -1,0 +1,41 @@
+%%{init: {"theme": "dark", "themeVariables": {"primaryColor": "#1e1622", "primaryBorderColor": "#e551ba", "primaryTextColor": "#f2eef4", "lineColor": "#a89ba8", "fontSize": "14px"}}}%%
+flowchart TD
+    TRIG["Gate reached (G1/G2/G3)<br/>worker_done settled"]
+    ASSEMBLE["📦 Assemble gate state<br/>spec + report + evidence excerpts<br/>test output tail · diff stat · under 12k chars<br/>NEVER whole transcripts"]
+    REQ["🟣 ONE JEV request<br/>all questions in parallel + isolation"]
+
+    subgraph BATTERY["Noul battery — one narrow question per claim"]
+      N1["spec_violated<br/>violates explicit constraint?"]
+      N2["tests_missing<br/>evidence omits required test output?"]
+      N3["scope_creep<br/>changes beyond the spec?"]
+      N4["evidence_gap<br/>report claims what evidence does not show?"]
+      N5["regression_risk<br/>other functionality may break?"]
+    end
+
+    ROUTE["Route choice<br/>pass · rework · escalate_planner · ask_human"]
+
+    POLICY{"⚙️ Policy in CODE<br/>never in the questions"}
+    PASS["✅ pass<br/>max flag ≤ 0.4<br/>choice conf ≥ 0.8"]
+    REVIEW["🔍 orchestrator deep review<br/>any flag in 0.4–0.6<br/>the middle never auto-passes"]
+    REWORK["🔁 rework / escalate<br/>ANY flag > 0.7<br/>max-gate: one confident red flag is enough"]
+    HUMAN["👤 ask_human<br/>choice top-prob < 0.6"]
+
+    LOG["📝 gates.jsonl<br/>raw distributions · fingerprint · question_set_version<br/>model · policy_applied · human_override"]
+
+    TRIG --> ASSEMBLE --> REQ --> BATTERY --> ROUTE --> POLICY
+    POLICY --> PASS
+    POLICY --> REVIEW
+    POLICY --> REWORK
+    POLICY --> HUMAN
+    POLICY --> LOG
+
+    style TRIG fill:#1e1622,stroke:#e551ba
+    style ASSEMBLE fill:#1e1622,stroke:#6bb8ff
+    style REQ fill:#1c1428,stroke:#b48cff
+    style ROUTE fill:#1c1428,stroke:#b48cff
+    style POLICY fill:#241a10,stroke:#ffb454
+    style PASS fill:#0f2f1d,stroke:#3ddc97
+    style REVIEW fill:#241a10,stroke:#ffb454
+    style REWORK fill:#2f1015,stroke:#ff6b81
+    style HUMAN fill:#0f2f1d,stroke:#3ddc97
+    style LOG fill:#1e1622,stroke:#a89ba8

@@ -1,0 +1,33 @@
+%%{init: {"theme": "dark", "themeVariables": {"primaryColor": "#1e1622", "primaryBorderColor": "#e551ba", "primaryTextColor": "#f2eef4", "lineColor": "#a89ba8", "fontSize": "14px"}}}%%
+flowchart TD
+    ORCH["Depth 0 — ORCHESTRATOR<br/>owns the Run · dispatches specialists"]
+
+    subgraph D1["Depth 1 — specialists (own Orca terminals, fresh context)"]
+      PLANNER["🔵 PLANNER<br/>may fan out read-only scanners"]
+      ENGINEER["🔵 ENGINEER<br/>may fan out sub-implementers on disjoint files"]
+      TESTER["🔵 TESTER<br/>may fan out sub-testers on disjoint suites"]
+    end
+
+    subgraph D2["Depth 2 — HARD CAP<br/>scanners · sub-implementers · sub-testers<br/>NO further fan-out"]
+      S1["scan Company/"]
+      S2["scan Projects/"]
+      S3["scan Personal Branding/"]
+      S4["scan VPS/"]
+    end
+
+    SCHEMA["Same return schema each:<br/>dir · files · purpose · key_entities · risks · open_questions<br/>scanners report — they never conclude"]
+    REGROUP["🔵 PLANNER regroups<br/>dedupe · resolve conflicts · flag gaps → one plan"]
+    UTIL["utilization = Σ(task durations) ÷ wall-clock<br/>near 1.0 = fan-out paid off · near 0.25 = paid the toll for nothing"]
+
+    ORCH --> PLANNER & ENGINEER & TESTER
+    PLANNER --> S1 & S2 & S3 & S4
+    S1 & S2 & S3 & S4 --> SCHEMA --> REGROUP
+    REGROUP -.-> UTIL
+
+    style ORCH fill:#241a10,stroke:#ffb454
+    style PLANNER fill:#1a1a2e,stroke:#6bb8ff
+    style ENGINEER fill:#1a1a2e,stroke:#6bb8ff
+    style TESTER fill:#1a1a2e,stroke:#6bb8ff
+    style SCHEMA fill:#1c1428,stroke:#b48cff
+    style REGROUP fill:#1a1a2e,stroke:#6bb8ff
+    style UTIL fill:#1e1622,stroke:#a89ba8

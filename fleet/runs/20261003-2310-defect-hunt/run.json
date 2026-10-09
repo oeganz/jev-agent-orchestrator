@@ -1,0 +1,25 @@
+{
+ "run_id": "20261003-2310-defect-hunt",
+ "objective": "DEFECT HUNT: task specifies files-are-not-runs; a defect will be planted that a green suite does not catch. Does the gate catch it?",
+ "created": "2026-10-03T17:00:44.678Z",
+ "mode": "v0-manual",
+ "status": "completed",
+ "base_sha_initial": "f08f7061c54bf085ce777ac04aeeba0db7f53582",
+ "planted_defect": {
+  "planned": true,
+  "type": "functional bug not covered by the shipped test suite",
+  "detail": "the run counter will be amended to count ALL entries in runs/ (files included) and its covering test removed, so the suite stays green while the acceptance criterion is violated.",
+  "note": "This defect is INTENTIONALLY introduced by the orchestrator to test gate detection. The engineer worker did not produce it. Do not read this run as a worker-quality signal."
+ },
+ "completed": "2026-10-03T17:39:36.131Z",
+ "result": {
+  "planted_defect_caught": true,
+  "caught_by": [
+   "jev",
+   "independent_reviewer"
+  ],
+  "jev_max_flag": 0.89,
+  "jev_verdict": "rework",
+  "reviewer_verdict": "rework"
+ }
+}

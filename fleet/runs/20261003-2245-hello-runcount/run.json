@@ -1,0 +1,20 @@
+{
+ "run_id": "20261003-2245-hello-runcount",
+ "objective": "Add fleet/bin/hello.mjs that prints the number of run directories under fleet/runs/",
+ "created": "2026-10-03T16:36:56.535Z",
+ "mode": "v0-manual",
+ "status": "completed",
+ "base_sha_initial": "316e33f15842640eddf11c484571239e513ceb52",
+ "completed": "2026-10-03T16:53:25.550Z",
+ "orca_run": "run_054c65bfda51",
+ "final_sha": "ffb9fa60e321d4b91b274f6e94bba90f3d912ce8",
+ "tasks": [
+  "eng-1",
+  "test-1"
+ ],
+ "gates": [
+  "G2",
+  "G3"
+ ],
+ "terminals_settled": 2
+}

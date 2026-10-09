@@ -1,0 +1,2 @@
+{"ts":"2026-10-03T19:31:22.683Z","task_id":"eng-3","orca_task":"task_298f487ea75d","dispatch":"ctx_0620c0e526e4","role":"engineer","base_sha":"950b75b8dfbf90cfdd724ebbf89938483de248dc","model_requested":null,"resolution_path":"inherit","status":"dispatched"}
+{"ts":"2026-10-03T19:41:32.561Z","task_id":"eng-3-rework","orca_task":"task_670a108c582f","dispatch":"ctx_300d58124826","role":"engineer","base_sha":"bcd291f","rework_of":"eng-3","cites_gate":"G2","model_requested":null,"resolution_path":"inherit","status":"dispatched"}

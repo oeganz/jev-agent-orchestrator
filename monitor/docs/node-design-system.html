@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fleet Node Frame</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0e1218; --surface:#151b23; --surface2:#1d2531;
+  --fg:#e6ecf3; --fg-soft:#c0cad8; --muted:#8593a6; --line:#29323f;
+  --cyan:#3fc9db; --blue:#63a6ff; --violet:#9a8cff; --green:#4ecb8c;
+  --amber:#e0a33e; --grey:#6b7787; --live:#f07ab8;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 400 14px/1.55 "IBM Plex Sans", system-ui, sans-serif;
+  padding: 40px clamp(20px, 4vw, 64px) 96px;
+}
+.wrap { max-width: 1120px; margin: 0 auto; }
+.eyebrow { font: 600 10.5px/1 "IBM Plex Mono", monospace; letter-spacing:.15em; text-transform:uppercase; color: var(--muted); margin: 0 0 12px; }
+h1 { font: 700 30px/1.1 "IBM Plex Sans", sans-serif; letter-spacing:-.02em; margin: 0 0 14px; }
+.lede { color: var(--fg-soft); max-width: 660px; margin: 0 0 8px; }
+.rule { height:1px; background: var(--line); margin: 40px 0 34px; }
+h2 { font: 600 15px/1.3 "IBM Plex Sans", sans-serif; margin: 0 0 4px; }
+.sub { color: var(--muted); font-size: 12.5px; margin: 0 0 20px; }
+.bar-label { font: 600 10.5px/1 "IBM Plex Mono", monospace; letter-spacing:.14em; text-transform:uppercase; color: var(--muted); margin: 34px 0 14px; display:flex; align-items:center; gap:10px; }
+.bar-label::after { content:""; flex:1; height:1px; background:var(--line); }
+
+/* ===== THE NODE FRAME ===== */
+.gn {
+  display: inline-flex; align-items: center; gap: 9px;
+  min-width: 196px; padding: 6px 10px 6px 8px;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  border: 1px solid color-mix(in srgb, currentColor 24%, var(--line));
+  border-left: 3px solid currentColor;
+  border-radius: 9px;
+}
+.gn.live {
+  border-color: color-mix(in srgb, var(--live) 55%, var(--line));
+  border-left-color: var(--live);
+  background: color-mix(in srgb, var(--live) 6%, var(--surface));
+}
+.prov { width: 22px; height: 22px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 5px; }
+.prov img { width: 18px; height: 18px; display: block; object-fit: contain; }
+.prov.avatar { border-radius: 50%; overflow: hidden; background: #fff; }
+.prov.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.prov svg { width: 17px; height: 17px; display: block; fill: none; stroke: currentColor; stroke-width: 1.9; }
+.prov.hub { color: var(--cyan); }
+.prov.hub svg circle:last-child { fill: currentColor; stroke: none; }
+/* fallback when no asset exists yet: a tinted letter-mark */
+.prov.letter { font: 700 10px/1 "IBM Plex Mono", monospace; letter-spacing:-.02em; background: color-mix(in srgb, currentColor 15%, transparent); }
+.prov.glyph { font-size: 14px; background: color-mix(in srgb, currentColor 15%, transparent); }
+.prov.glyph { font-size: 14px; }
+.gn-txt { display:flex; flex-direction:column; line-height:1.28; min-width:0; }
+.gn-lbl { font: 500 12.5px/1.3 "IBM Plex Sans", sans-serif; color: var(--fg); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px; }
+.gn-role { font: 500 10px/1.3 "IBM Plex Mono", monospace; letter-spacing:.04em; text-transform:uppercase; color: var(--muted); }
+.gn-dot { width:8px; height:8px; border-radius:50%; flex:0 0 auto; margin-left:auto; }
+.gn.live .gn-dot { animation: blink 1.9s ease-out infinite; }
+@keyframes blink { 0%,100%{box-shadow:0 0 0 0 rgba(78,203,140,.55)} 60%{box-shadow:0 0 0 6px rgba(78,203,140,0)} }
+
+.dot-active { background: var(--green); }
+.dot-standby { background: var(--amber); }
+.dot-idle { background: var(--grey); }
+.c-cyan{color:var(--cyan)} .c-blue{color:var(--blue)} .c-violet{color:var(--violet)}
+.c-green{color:var(--green)} .c-amber{color:var(--amber)} .c-grey{color:var(--grey)} .c-live{color:var(--live)}
+
+/* layout helpers */
+.row { display:flex; flex-wrap:wrap; gap:22px; align-items:flex-start; }
+.grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(250px,1fr)); gap:16px; }
+.card { background: var(--surface); border:1px solid var(--line); border-radius:11px; padding:18px; }
+.card .cap { font: 600 10px/1 "IBM Plex Mono", monospace; letter-spacing:.12em; text-transform:uppercase; color: var(--muted); margin-bottom:14px; }
+.card p.note { font-size:12px; color:var(--muted); margin:12px 0 0; }
+
+/* anatomy callouts */
+.anat { display:flex; align-items:center; gap:0; flex-wrap:wrap; row-gap:26px; }
+.anat .slot { position:relative; display:flex; flex-direction:column; align-items:center; gap:9px; }
+.anat .tag { font: 600 9.5px/1 "IBM Plex Mono", monospace; letter-spacing:.1em; text-transform:uppercase; color: var(--muted); white-space:nowrap; }
+.anat .demo { display:inline-flex; align-items:center; gap:9px; padding:6px 10px 6px 8px; border-radius:9px; border:1px dashed var(--line); }
+
+/* spec table */
+table { border-collapse: collapse; width:100%; font-size:12.5px; }
+th, td { text-align:left; padding:8px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+th { font: 600 10px/1 "IBM Plex Mono", monospace; letter-spacing:.12em; text-transform:uppercase; color: var(--muted); }
+td.mono { font: 500 11.5px/1.45 "IBM Plex Mono", monospace; color: var(--fg-soft); }
+
+/* legend */
+.legend { display:flex; flex-direction:column; gap:11px; }
+.legend div { display:flex; align-items:center; gap:11px; font-size:12.5px; color: var(--fg-soft); }
+.sw { width:11px; height:11px; border-radius:50%; flex:0 0 auto; }
+.swatch-bar { width:5px; height:14px; border-radius:2px; flex:0 0 auto; }
+
+/* canvas */
+.canvas { background: var(--bg); border:1px dashed var(--line); border-radius:13px; padding:38px 26px; position:relative; overflow:hidden; }
+.canvas::before { content:""; position:absolute; inset:0; background-image: radial-gradient(circle, #1a222d 1px, transparent 1px); background-size:24px 24px; }
+.canvas > * { position:relative; }
+
+/* ===== ACTIVE GLOW ===== */
+.gn.live {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--live) 35%, transparent),
+              0 0 20px -3px color-mix(in srgb, var(--live) 60%, transparent);
+}
+.gn.live .gn-dot { box-shadow: 0 0 8px color-mix(in srgb, var(--green) 80%, transparent); }
+
+/* glowing animated edge */
+.edge-demo { position:relative; height:120px; margin-top:8px; }
+.edge-demo svg { position:absolute; inset:0; width:100%; height:100%; }
+.edge-base { fill:none; stroke:var(--line); stroke-width:1.5; }
+.edge-glow { fill:none; stroke:var(--cyan); stroke-width:2.4; stroke-linecap:round;
+  stroke-dasharray:4 14; filter: drop-shadow(0 0 4px currentColor);
+  animation: travel .9s linear infinite; }
+@keyframes travel { to { stroke-dashoffset:-18; } }
+.edge-pulse { fill:none; stroke:color-mix(in srgb, var(--cyan) 45%, transparent); stroke-width:6; }
+
+@media (prefers-reduced-motion: reduce) { .edge-glow, .gn.live .gn-dot { animation:none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<p class="eyebrow">Fleet Monitor</p>
+<h1>Node frame</h1>
+<p class="lede">One frame, five parts. Provider chip says which agent software is running it, the accent bar and border say what it is, the role line names it, the dot says whether it is working. Everything on the graph is this frame.</p>
+
+<div class="rule"></div>
+<h2>Anatomy</h2>
+<p class="sub">The same frame read left to right.</p>
+<div class="anat">
+  <div class="slot"><span class="demo"><span class="prov"><img src="../ui/src/assets/providers/claude.svg" alt="claude"></span></span><span class="tag">1 - provider chip</span></div>
+  <div class="slot"><span class="demo"><span class="gn-lbl">eng-be1</span></span><span class="tag">2 - label</span></div>
+  <div class="slot"><span class="demo"><span class="gn-role">engineer</span></span><span class="tag">3 - role</span></div>
+  <div class="slot"><span class="demo"><span class="gn-dot dot-standby"></span></span><span class="tag">4 - state dot</span></div>
+  <div class="slot"><span class="demo" style="border-left:3px solid var(--blue);border-radius:9px"></span><span class="tag">5 - accent bar</span></div>
+</div>
+
+<div class="rule"></div>
+<h2>States</h2>
+<p class="sub">Three, and only three. Active adds pink border and tint; standby and idle leave the frame at rest so nothing competes with the one node that is working.</p>
+<div class="grid">
+<div class="card"><div class="cap">Active - working now</div><div class="gn live c-green"><span class="prov"><img src="../ui/src/assets/providers/claude.svg" alt="claude"></span><span class="gn-txt"><span class="gn-lbl">test-1</span><span class="gn-role">tester</span></span><span class="gn-dot dot-active"></span></div><p class="note">Pink border, 6% pink tint, green dot that pulses.</p></div>
+<div class="card"><div class="cap">Standby - finished, kept</div><div class="gn c-blue"><span class="prov"><img src="../ui/src/assets/providers/claude.svg" alt="claude"></span><span class="gn-txt"><span class="gn-lbl">eng-be1</span><span class="gn-role">engineer</span></span><span class="gn-dot dot-standby"></span></div><p class="note">Amber dot. Frame resting.</p></div>
+<div class="card"><div class="cap">Idle - quiet</div><div class="gn c-grey"><span class="prov letter">&#8226;</span><span class="gn-txt"><span class="gn-lbl">a51c16b1</span><span class="gn-role">unlabelled</span></span><span class="gn-dot dot-idle"></span></div><p class="note">Grey dot and grey bar.</p></div>
+</div>
+<div class="rule"></div>
+<h2>Categories</h2>
+<p class="sub">Accent bar and border colour carry the category. The role line repeats it in words so the frame survives greyscale printing and colour-blind viewing.</p>
+<div class="grid">
+<div class="card"><div class="cap">Run - cyan</div><div class="gn c-cyan"><span class="prov hub"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.4"/><circle cx="12" cy="12" r="3.3"/></svg></span><span class="gn-txt"><span class="gn-lbl"><client>-151 upload</span><span class="gn-role">run</span></span><span class="gn-dot dot-standby"></span></div><p class="note">A run has no chip: it is not an agent. Its role line is where the repo is named.</p></div>
+<div class="card"><div class="cap">Planner - violet</div><div class="gn c-violet"><span class="prov"><img src="../ui/src/assets/providers/claude.svg" alt="claude"></span><span class="gn-txt"><span class="gn-lbl">planner-1</span><span class="gn-role">planner</span></span><span class="gn-dot dot-standby"></span></div></div>
+<div class="card"><div class="cap">Engineer - blue</div><div class="gn c-blue"><span class="prov"><img src="../ui/src/assets/providers/claude.svg" alt="claude"></span><span class="gn-txt"><span class="gn-lbl">eng-fe1</span><span class="gn-role">engineer</span></span><span class="gn-dot dot-standby"></span></div></div>
+<div class="card"><div class="cap">Tester - green</div><div class="gn c-green"><span class="prov"><img src="../ui/src/assets/providers/claude.svg" alt="claude"></span><span class="gn-txt"><span class="gn-lbl">test-1</span><span class="gn-role">tester</span></span><span class="gn-dot dot-active"></span></div></div>
+<div class="card"><div class="cap">Devops - amber</div><div class="gn c-amber"><span class="prov"><img src="../ui/src/assets/providers/claude.svg" alt="claude"></span><span class="gn-txt"><span class="gn-lbl">deploy-1</span><span class="gn-role">devops</span></span><span class="gn-dot dot-idle"></span></div></div>
+<div class="card"><div class="cap">Claude session - rose</div><div class="gn c-live"><span class="prov"><img src="../ui/src/assets/providers/claude.svg" alt="claude"></span><span class="gn-txt"><span class="gn-lbl">read ticket <client>-151</span><span class="gn-role">session</span></span><span class="gn-dot dot-active"></span></div></div>
+<div class="card"><div class="cap">Hermes - rose</div><div class="gn c-live"><span class="prov avatar"><img src="../ui/src/assets/providers/hermes.png" alt="hermes"></span><span class="gn-txt"><span class="gn-lbl">ZenoA</span><span class="gn-role">hermes operator</span></span><span class="gn-dot dot-active"></span></div></div>
+<div class="card"><div class="cap">Unlabelled - grey</div><div class="gn c-grey"><span class="prov letter">&#8226;</span><span class="gn-txt"><span class="gn-lbl">5a710b6c</span><span class="gn-role">no task</span></span><span class="gn-dot dot-idle"></span></div></div>
+</div>
+
+<div class="rule"></div>
+<h2>Provider chip</h2>
+<p class="sub">22px, tinted to the frame colour, sitting in the icon slot. Detection is Orca's provider field on each worker; sessions are claude by definition; ZenoA is hermes. Real logos are scraped from OmniRoute's provider set and copied into the repo. Where no asset exists yet, a letter-mark holds the slot.</p>
+<div class="grid">
+<div class="card"><div class="cap">claude</div><div class="gn c-blue"><span class="prov"><img src="../ui/src/assets/providers/claude.svg" alt="claude"></span><span class="gn-txt"><span class="gn-lbl">eng-be1</span><span class="gn-role">engineer</span></span><span class="gn-dot dot-standby"></span></div><p class="note">claude.svg from the scraped set.</p></div>
+<div class="card"><div class="cap">codex</div><div class="gn c-blue"><span class="prov"><img src="../ui/src/assets/providers/codex.svg" alt="codex"></span><span class="gn-txt"><span class="gn-lbl">codex-task</span><span class="gn-role">engineer</span></span><span class="gn-dot dot-standby"></span></div><p class="note">codex.svg from the scraped set.</p></div>
+<div class="card"><div class="cap">hermes</div><div class="gn c-live"><span class="prov avatar"><img src="../ui/src/assets/providers/hermes.png" alt="hermes"></span><span class="gn-txt"><span class="gn-lbl">ZenoA</span><span class="gn-role">hermes operator</span></span><span class="gn-dot dot-active"></span></div><p class="note">Official Nous mascot, circular avatar crop.</p></div>
+<div class="card"><div class="cap">antigravity</div><div class="gn c-violet"><span class="prov"><img src="../ui/src/assets/providers/antigravity.png" alt="antigravity"></span><span class="gn-txt"><span class="gn-lbl">anti-task</span><span class="gn-role">engineer</span></span><span class="gn-dot dot-standby"></span></div><p class="note">No asset yet - letter-mark.</p></div>
+</div>
+<div class="rule"></div>
+<h2>Where each fact lives</h2>
+<p class="sub">An agent frame never carries the workspace. The repo belongs to the run, and area grouping comes later as clusters.</p>
+<div class="card" style="padding:0; overflow:hidden">
+<table>
+<tr><th>fact</th><th>lives on</th><th>source</th></tr>
+<tr><td>category</td><td class="mono">accent bar + border</td><td class="mono">tasks.jsonl role, or node kind</td></tr>
+<tr><td>provider</td><td class="mono">chip</td><td class="mono">orca worker-list provider</td></tr>
+<tr><td>name</td><td class="mono">label</td><td class="mono">task id, or first prompt for sessions</td></tr>
+<tr><td>role</td><td class="mono">role line under the label</td><td class="mono">tasks.jsonl role</td></tr>
+<tr><td>state</td><td class="mono">dot</td><td class="mono">orca terminal + worker state</td></tr>
+<tr><td>workspace / repo</td><td class="mono">the run frame, not the agent</td><td class="mono">run.json repo</td></tr>
+<tr><td>area (MRI, GanzApps)</td><td class="mono">cluster grouping, later</td><td class="mono">not yet wired</td></tr>
+</table>
+</div>
+
+<div class="rule"></div>
+<h2>Legend</h2>
+<p class="sub">Three groups, read top to bottom in the sidebar: what it is, what runs it, how it is.</p>
+<div class="grid">
+<div class="card"><div class="cap">Category</div><div class="legend">
+  <div><span class="swatch-bar" style="background:var(--cyan)"></span> run</div>
+  <div><span class="swatch-bar" style="background:var(--violet)"></span> planner</div>
+  <div><span class="swatch-bar" style="background:var(--blue)"></span> engineer</div>
+  <div><span class="swatch-bar" style="background:var(--green)"></span> tester</div>
+  <div><span class="swatch-bar" style="background:var(--amber)"></span> devops</div>
+  <div><span class="swatch-bar" style="background:var(--live)"></span> session / hermes</div>
+  <div><span class="swatch-bar" style="background:var(--grey)"></span> unlabelled</div>
+</div></div>
+<div class="card"><div class="cap">State</div><div class="legend">
+  <div><span class="sw" style="background:var(--green)"></span> active - working now</div>
+  <div><span class="sw" style="background:var(--amber)"></span> standby - finished, kept</div>
+  <div><span class="sw" style="background:var(--grey)"></span> idle - quiet</div>
+</div></div>
+<div class="card"><div class="cap">Provider</div><div class="legend">
+  <div><span class="prov"><img src="../ui/src/assets/providers/claude.svg" alt="claude"></span> claude</div>
+  <div><span class="prov"><img src="../ui/src/assets/providers/codex.svg" alt="codex"></span> codex</div>
+  <div><span class="prov"><img src="../ui/src/assets/providers/gemini.svg" alt="gemini"></span> gemini</div>
+  <div><span class="prov avatar"><img src="../ui/src/assets/providers/hermes.png" alt="hermes"></span> hermes</div>
+  <div><span class="prov"><img src="../ui/src/assets/providers/antigravity.png" alt="antigravity"></span> antigravity</div>
+</div></div>
+</div>
+
+<h2 style="margin-top:40px">Active glow</h2>
+<p class="sub">The working node lifts off the canvas: a pink ring and a soft bloom, its dot lit green. Edges carrying live traffic run a glowing dash that travels toward the target - so you can see where work is flowing, not just that something is busy.</p>
+<div class="canvas" style="padding:26px">
+  <div class="row" style="align-items:center; gap:0; flex-wrap:nowrap">
+    <div class="gn live c-green"><span class="prov"><img src="../ui/src/assets/providers/claude.svg" alt="claude"></span><span class="gn-txt"><span class="gn-lbl">eng-be1</span><span class="gn-role">engineer</span></span><span class="gn-dot dot-active"></span></div>
+    <div class="edge-demo" style="flex:0 0 160px; height:46px">
+      <svg viewBox="0 0 160 46" preserveAspectRatio="none">
+        <path class="edge-base" d="M0,23 C60,23 100,23 160,23"/>
+        <path class="edge-pulse" d="M0,23 C60,23 100,23 160,23" style="stroke:color-mix(in srgb, var(--green) 30%, transparent)"/>
+        <path class="edge-glow" d="M0,23 C60,23 100,23 160,23" style="stroke:var(--green); stroke-width:2.6; stroke-dasharray:5 15"/>
+      </svg>
+    </div>
+    <div class="gn c-green"><span class="prov"><img src="../ui/src/assets/providers/claude.svg" alt="claude"></span><span class="gn-txt"><span class="gn-lbl">test-1</span><span class="gn-role">tester</span></span><span class="gn-dot dot-active"></span></div>
+  </div>
+  <p class="sub" style="margin:20px 0 0">Active node: pink ring + bloom, lit green dot. Idle and standby nodes stay flat and matte - only the working one glows, so the eye lands on what is happening now.</p>
+</div>
+<div class="rule"></div>
+<h2>On the canvas</h2>
+<p class="sub">A run with its agents at mixed states. Curved edges; flow dashes travel only on edges carrying live traffic.</p>
+<div class="canvas"><div class="row" style="justify-content:center; gap:26px; flex-wrap:wrap">
+  <div class="gn c-blue"><span class="prov"><img src="../ui/src/assets/providers/claude.svg" alt="claude"></span><span class="gn-txt"><span class="gn-lbl">eng-be1</span><span class="gn-role">engineer</span></span><span class="gn-dot dot-standby"></span></div>
+  <div class="gn live c-green"><span class="prov"><img src="../ui/src/assets/providers/claude.svg" alt="claude"></span><span class="gn-txt"><span class="gn-lbl">test-1</span><span class="gn-role">tester</span></span><span class="gn-dot dot-active"></span></div>
+  <div class="gn c-cyan"><span class="prov hub"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.4"/><circle cx="12" cy="12" r="3.3"/></svg></span><span class="gn-txt"><span class="gn-lbl"><client>-151 upload</span><span class="gn-role">run - <client>-tools</span></span><span class="gn-dot dot-standby"></span></div>
+  <div class="gn c-violet"><span class="prov"><img src="../ui/src/assets/providers/claude.svg" alt="claude"></span><span class="gn-txt"><span class="gn-lbl">planner-1</span><span class="gn-role">planner</span></span><span class="gn-dot dot-standby"></span></div>
+  <div class="gn c-grey"><span class="prov letter">&#8226;</span><span class="gn-txt"><span class="gn-lbl">5a710b6c</span><span class="gn-role">no task</span></span><span class="gn-dot dot-idle"></span></div>
+</div></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+%%{init: {"theme": "dark", "themeVariables": {"primaryColor": "#1e1622", "primaryBorderColor": "#e551ba", "primaryTextColor": "#f2eef4", "lineColor": "#a89ba8", "fontSize": "14px"}}}%%
+flowchart TD
+    YOU["👤 You<br/>type request into orchestrator pane"]
+    EST["📊 Static pre-scan + estimate<br/>estimate.mjs · free, no LLM<br/>files / bytes / lang-mix → tokens · minutes · confidence"]
+    G0{"🟡 GATE 0 — Budget<br/>spend + estimate vs daily cap<br/>cheaper-path options"}
+    RC["📁 run-create<br/>objective recorded · mode resolved<br/>runs/&lt;id&gt;/ created"]
+    PF["🟣 Spec pre-flight (JEV)<br/>5 nouls: Target · Change · Constraints<br/>Ownership · Observable acceptance"]
+    PLANNER["🔵 PLANNER<br/>plan + task DAG · never writes<br/>may fan out read-only scanners"]
+    G1{"🟡 GATE 1 — Plan approved<br/>JEV first-pass + orchestrator"}
+    WAVES["📋 Tasks in ready waves<br/>only real dependencies (--deps)<br/>independent tasks in parallel"]
+    ENGINEER["🔵 ENGINEER<br/>TDD · may write own file set<br/>may fan out sub-implementers"]
+    G2{"🟡 GATE 2 — Build accepted<br/>JEV: spec_violated · tests_missing · scope_creep<br/>evidence_gap · regression_risk"}
+    TESTER["🔵 TESTER — FRESH terminal<br/>never engineer context · falsification stance<br/>states what it did NOT verify"]
+    G3{"🟡 GATE 3 — Verified<br/>JEV first-pass"}
+    G4{"🟢 GATE 4 — Irreversible<br/>HUMAN ALWAYS<br/>deploy · push · delete · infra · spend"}
+    DEVOPS["🔵 DEVOPS<br/>only behind approved gate<br/>deploy result + rollback proven"]
+    CONS["📄 Consolidate → summary.md<br/>per task: outcome · evidence · blockers"]
+    SETTLE["✅ Settle every terminal<br/>reuse · retain · release"]
+
+    YOU --> EST --> G0 --> RC --> PF --> PLANNER --> G1
+    G1 -->|approved| WAVES --> ENGINEER --> G2
+    G2 -->|accepted| TESTER --> G3
+    G3 -->|verified| G4 -->|approved| DEVOPS
+    G3 -->|no deploy needed| CONS
+    G4 -->|rejected / rollback| CONS
+    DEVOPS --> CONS --> SETTLE
+
+    G2 -.->|"fail: new engineer task<br/>cites failing evidence"| ENGINEER
+    G3 -.->|"fail: rework loop<br/>visible in tasks.jsonl"| ENGINEER
+
+    style YOU fill:#0f2f1d,stroke:#3ddc97,color:#f2eef4
+    style G0 fill:#241a10,stroke:#ffb454,color:#f2eef4
+    style G1 fill:#241a10,stroke:#ffb454,color:#f2eef4
+    style G2 fill:#241a10,stroke:#ffb454,color:#f2eef4
+    style G3 fill:#241a10,stroke:#ffb454,color:#f2eef4
+    style G4 fill:#0f2f1d,stroke:#3ddc97,color:#f2eef4
+    style PF fill:#1c1428,stroke:#b48cff,color:#f2eef4
+    style EST fill:#1c1428,stroke:#b48cff,color:#f2eef4

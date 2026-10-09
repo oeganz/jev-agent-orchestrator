@@ -1,0 +1,448 @@
+:root {
+  --bg:#0e1218; --surface:#151b23; --surface2:#1d2531;
+  --fg:#e6ecf3; --fg-soft:#c0cad8; --muted:#8593a6; --line:#29323f;
+  --live:#f07ab8; --green:#4ecb8c; --monitor:#f0c860;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 400 14px/1.5 "IBM Plex Sans", system-ui, sans-serif; overflow: hidden;
+}
+#root { height: 100%; }
+/* Panels are laid out beside the graph, not floated over it. */
+.app { display: flex; height: 100%; }
+.graph-area { flex: 1 1 auto; min-width: 0; position: relative; }
+.side {
+  flex: 0 0 344px; min-height: 0; padding: 14px; display: flex; flex-direction: column; gap: 12px;
+  border-left: 1px solid var(--line); background: var(--surface);
+}
+.side > .log { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.side .msgs { flex: 1 1 auto; overflow-y: auto; }
+.react-flow { width: 100%; height: 100%; }
+
+/* ---- node ---- */
+/* Boxed node: 3px accent bar carries the category, chip carries the provider,
+   label + role line, state dot on the right edge. Active adds a glow. */
+.gn { display: flex; align-items: center; gap: 9px; padding: 6px 10px 6px 8px; width: 188px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      border: 1px solid color-mix(in srgb, currentColor 24%, var(--line));
+      border-left: 3px solid currentColor;
+      border-radius: 9px; }
+.gn-dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; margin-left: auto; }
+
+/* Identity socket dot: a tiny hue marker on the TOP-CENTRE of every
+   session/agent card. Painted with the per-owner identity colour (the
+   same hue the bubble border / tether use) so the bubble, the line and
+   the card all identify the same owner by colour alone. The bubble
+   tether ends in a matching socket circle on the card, so the dot on
+   the card aligns visually with the bubble's endpoint. The dot is a
+   child of .gn (position: relative by extension), absolutely
+   positioned at the top edge with translate(-50%) so it sits exactly
+   centred regardless of its rendered width. pointer-events stay none
+   so the dot never intercepts a card drag or a node click. */
+.gn { position: relative; }                              /* already flex; relative keeps the absolute socket anchored */
+.gn-socket {
+  position: absolute; left: 50%; top: -3px;
+  width: 6px; height: 6px; border-radius: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--surface) 70%, transparent),
+              0 0 4px color-mix(in srgb, currentColor 80%, transparent);
+}
+
+/* ---- state styling ---- */
+/* active: pulsing halo. The className .gn-active is keyed off state==='active'
+   so the styling follows the node whatever its kind. */
+.gn-active { border-color: color-mix(in srgb, var(--green) 55%, var(--line));
+             border-left-color: var(--green);
+             background: color-mix(in srgb, var(--green) 6%, var(--surface));
+             box-shadow: 0 0 0 1px color-mix(in srgb, var(--green) 35%, transparent),
+                         0 0 22px -3px color-mix(in srgb, var(--green) 60%, transparent); }
+.gn-active .gn-dot { box-shadow: 0 0 8px color-mix(in srgb, var(--green) 80%, transparent);
+                     animation: halo 1.9s ease-out infinite; }
+@keyframes halo {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--green) 55%, transparent); }
+  60% { box-shadow: 0 0 0 6px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+/* idle: flat and dim. */
+.gn-idle { opacity: .82; }
+/* monitoring: a distinct supervising ring - a slow rotating dashed outline so
+   it reads as "watching, not working". The same flat body so it does not
+   confuse with active. */
+.gn-monitoring { border-color: color-mix(in srgb, var(--monitor) 55%, var(--line));
+                 border-left-color: var(--monitor);
+                 background: color-mix(in srgb, var(--monitor) 5%, var(--surface));
+                 box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--monitor) 40%, transparent),
+                             inset 0 0 0 1.5px color-mix(in srgb, var(--monitor) 25%, transparent); }
+.gn-monitoring::after {
+  content: ''; position: absolute; inset: -4px; border-radius: 11px; pointer-events: none;
+  border: 1.5px dashed color-mix(in srgb, var(--monitor) 65%, transparent);
+  animation: monitor-spin 6.5s linear infinite;
+  transform-origin: center;
+}
+.gn-monitoring { position: relative; }
+.gn-monitoring .gn-dot { box-shadow: 0 0 8px color-mix(in srgb, var(--monitor) 80%, transparent); }
+@keyframes monitor-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---- container nodes (branch) ---- */
+/* Folders are not cards: each folder is a hull box (see folder hulls below).
+   branch: small labelled divider inside its folder's hull. */
+.gn-container { position: relative; }
+.gn[data-kind="branch"] { width: 158px; padding: 5px 9px 5px 8px;
+  background: color-mix(in srgb, #8ea4bf 6%, var(--surface));
+  border-left-color: #8ea4bf; }
+.gn[data-kind="branch"] .gn-lbl { font: 500 11.5px/1.2 "IBM Plex Mono", monospace;
+                              letter-spacing: .04em; text-transform: uppercase; color: var(--fg-soft); }
+
+.gn-txt { display: flex; flex-direction: column; line-height: 1.3; min-width: 0; }
+.gn-lbl { font: 500 13px/1.25 "IBM Plex Sans", sans-serif; color: var(--fg);
+          white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gn-sub { font: 500 10px/1.3 "IBM Plex Mono", monospace; letter-spacing: .04em; text-transform: uppercase;
+          color: #a7b4c6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---- origin badge ---- */
+/* Small chip that sits to the right of the gn-txt on session/agent frames so
+   the dispatch mechanism (orca / subagent / claude) reads at a glance. */
+.badge { font: 600 9px/1 "IBM Plex Mono", monospace; letter-spacing: .04em;
+         text-transform: uppercase; padding: 3px 6px; border-radius: 99px;
+         flex: 0 0 auto; align-self: center; border: 1px solid currentColor; }
+.badge-orca     { color: #f0c860; background: color-mix(in srgb, #f0c860 12%, transparent); }
+.badge-subagent { color: #b08fff; background: color-mix(in srgb, #b08fff 12%, transparent); }
+.badge-claude   { color: #e6ecf3; background: color-mix(in srgb, #e6ecf3 10%, transparent); }
+
+/* ---- provider chip ---- */
+.prov { width: 22px; height: 22px; flex: 0 0 auto; display: grid; place-items: center; }
+.prov img { width: 18px; height: 18px; display: block; object-fit: contain; }
+.prov.avatar { border-radius: 50%; overflow: hidden; background: #fff; }
+.prov.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.prov.branch { color: #8ea4bf; }
+.prov.branch svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.9;
+                    stroke-linecap: round; stroke-linejoin: round; }
+/* Neutral letter chip for sessions with provider='unknown'. Same square
+   dimensions as the logo chips so the row layout never shifts. The glyph is
+   muted to signal "we don't know" rather than presenting as a real brand. */
+.prov.unknown {
+  font: 700 13px/1 "IBM Plex Mono", monospace;
+  color: #8593a6;
+  background: color-mix(in srgb, var(--surface2) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  border-radius: 5px;
+  width: 22px; height: 22px;
+}
+
+/* ---- overlay panels ---- */
+.card {
+  background: var(--surface2);
+  border: 1px solid var(--line); border-radius: 11px; padding: 13px 15px;
+}
+h1 { font: 700 19px/1.1 Archivo, "IBM Plex Sans", sans-serif; letter-spacing: -0.01em; margin: 0 0 9px; }
+.stats { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 500 11px "IBM Plex Mono", monospace; color: var(--fg-soft);
+        border: 1px solid var(--line); border-radius: 99px; padding: 2.5px 9px; white-space: nowrap; }
+.chip b { color: var(--fg); font-weight: 600; }
+.chip.live { color: var(--green); border-color: color-mix(in srgb, var(--green) 45%, var(--line)); }
+.chip.monitor { color: var(--monitor); border-color: color-mix(in srgb, var(--monitor) 45%, var(--line)); }
+
+.conn { margin-top: 9px; font: 500 11px "IBM Plex Mono", monospace; color: var(--muted); }
+.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+       margin-right: 6px; vertical-align: middle; animation: pulse 1.8s ease-out infinite; }
+.dot.off { background: #e0a33e; animation: none; }
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--green) 55%, transparent); }
+  70% { box-shadow: 0 0 0 6px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+.legend { display: flex; flex-direction: column; gap: 8px; }
+.legend div { display: flex; align-items: center; gap: 9px; font: 11.5px "IBM Plex Sans", sans-serif; color: var(--fg-soft); }
+.sw { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
+.swatch-bar { width: 5px; height: 14px; border-radius: 2px; flex: 0 0 auto; }
+.sw.ring { background: transparent; border: 1.5px solid var(--fg-soft); }
+
+.edge-label {
+  position: absolute; pointer-events: none;
+  font: 600 9.5px "IBM Plex Mono", monospace; white-space: nowrap;
+  padding: 1px 4px; border-radius: 4px; background: rgba(14, 18, 24, .9);
+}
+
+/* Glowing wires: the dashed overlay that sits on top of an animated edge's
+   faint base line. Matches the reference (adlc-comparison-full.html) —
+   the dash marches along the curve, the stroke pulses alpha 0.2 -> 0.5 ->
+   0.2 once per second, and a soft cyan drop-shadow carries the glow. */
+.edge-flow {
+  fill: none; stroke-width: 1.5; stroke-linecap: round;
+  stroke-dasharray: 8 8; pointer-events: none;
+  animation: edge-flow-drift 1.7s linear infinite,
+             edge-flow-pulse 1s ease-in-out infinite;
+  filter: drop-shadow(0 0 3px currentColor);
+}
+@keyframes edge-flow-drift { to { stroke-dashoffset: -16; } }
+@keyframes edge-flow-pulse {
+  0%, 100% { opacity: 0.2; }
+  50%      { opacity: 0.5; }
+}
+
+/* Particle layer: glowing dots travelling parent -> child along the bezier
+   curve. Cyan (the same colour as the active edge stroke). Pointer-
+   transparent so it never blocks clicks. The filter URL is set by
+   ParticleLayer in App.jsx; reduced-motion kills the rAF driver in JS. */
+.ws-particles { position: absolute; left: 0; top: 0; width: 1px; height: 1px;
+  pointer-events: none; overflow: visible; z-index: -1; }
+.ws-particles circle { fill: #67e8f9; }
+
+/* ---- react flow chrome ---- */
+.react-flow__controls { box-shadow: none; }
+.react-flow__controls-button {
+  background: var(--surface2); border-bottom: 1px solid var(--line); color: var(--fg-soft); fill: var(--fg-soft);
+}
+.react-flow__controls-button:hover { background: var(--surface); }
+.react-flow__attribution { background: transparent; color: var(--muted); }
+.react-flow__attribution a { color: var(--muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  /* Disabled under reduced motion: the dashed drift + alpha pulse on
+     animated wires, and the moving-dot flow on the connection chip. The
+     base glow stroke is kept (no animation), so users still see a bright
+     cyan line for active wires — just without the marching dashes or
+     pulsing halo. */
+  .dot, .gn-active .gn-dot, .gn-monitoring::after { animation: none; }
+  .edge-flow { animation: none; opacity: 0.5; }
+  /* Particles: the JS ParticleLayer also exits when prefers-reduced-motion
+     matches; this rule is a belt-and-braces fallback for non-JS or
+     pre-hydration states. */
+  .ws-particles { display: none; }
+}
+/* Narrow: stack the panels under the graph rather than beside it. */
+@media (max-width: 879px) {
+  .app { flex-direction: column; }
+  .side { flex: 0 0 auto; max-height: 46%; border-left: 0; border-top: 1px solid var(--line); padding: 10px; }
+  .legend { display: none; }
+}
+
+/* folder hulls */
+/* Anchored at the flow origin inside the viewport transform; overflow lets the
+   rects draw at any flow coordinate. Negative z keeps them behind the nodes.
+   The .hull-group is the interactive region: pointer-events is enabled so the
+   box and its label receive pointerdown and start the group drag. The cursor
+   .grab/.grabbing classes carry the affordance. */
+.ws-hulls { position: absolute; left: 0; top: 0; width: 1px; height: 1px;
+  pointer-events: none; overflow: visible; z-index: -1; }
+.ws-hulls .hull-group { pointer-events: all; cursor: grab; }
+.ws-hulls .hull-group:active,
+body.hull-dragging .ws-hulls .hull-group { cursor: grabbing; }
+/* Node drags are owned by React Flow; while we're holding a hull, suppress
+   the iframe-wide text-selection cursor so the screen doesn't go I-beam. */
+body.hull-dragging { user-select: none; }
+.hull-label { font: 600 10px "IBM Plex Mono", monospace; letter-spacing: .1em;
+  text-transform: uppercase; fill: #8593a6; pointer-events: all; cursor: inherit; }
+.hull-box { pointer-events: all; cursor: inherit; }
+
+/* Re-layout button: same surface treatment as the chips but slightly larger
+   so it sits above the stats row without crowding the live pill. */
+.head-actions { display: flex; gap: 6px; margin: 4px 0 10px; }
+button.relayout { font: 600 11px "IBM Plex Mono", monospace; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--fg-soft);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  border: 1px solid var(--line); border-radius: 99px;
+  padding: 4px 10px; cursor: pointer; }
+button.relayout:hover { border-color: color-mix(in srgb, var(--fg-soft) 50%, var(--line));
+  color: var(--fg); }
+
+/* Bubbles toggle: same shape as Re-layout. A small dot shows the current state
+   so a glance reads ON (green) vs OFF (muted). Active dot uses the same green
+   the active cards use so the affordance ties together visually. */
+button.toggle-bubbles {
+  font: 600 11px "IBM Plex Mono", monospace; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--fg-soft);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  border: 1px solid var(--line); border-radius: 99px;
+  padding: 4px 10px 4px 12px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+button.toggle-bubbles:hover { border-color: color-mix(in srgb, var(--fg-soft) 50%, var(--line));
+  color: var(--fg); }
+button.toggle-bubbles.on .bubble-toggle-dot {
+  background: var(--green);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--green) 70%, transparent);
+}
+button.toggle-bubbles.off .bubble-toggle-dot {
+  background: var(--muted);
+  opacity: 0.55;
+}
+.bubble-toggle-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+/* ---- bubbles ---- */
+/* Speech-bubble overlay for working cards (active | monitoring only). Anchored
+   above the card via React Flow's internal node bounds, so it tracks drags and
+   viewport changes without becoming a node itself. Pointer events stay none so
+   the bubble never steals a card drag or pane pan. The tail is a small triangle
+   pointing down at the card; the dark translucent surface matches the rest of
+   the palette. The bubble's border + tail are tinted with the OWNER card's
+   accent colour (--bubble-accent, set inline by the Bubble component) so the
+   owning card is identifiable by colour alone. A 1px leader line spans the
+   14px gap between the bubble's tail tip and the card's top centre, so the
+   link is unmistakable even when many bubbles crowd the same area.
+   The Bubble component sets `data-side="above|below|right|left"` based on
+   the placement picked by placeBubbles(). The CSS repositions the tail and
+   the leader line so the line always points at the owner card, whichever
+   side won. */
+.bubble {
+  position: absolute; pointer-events: none; z-index: 5;
+  max-width: 260px; min-width: 0;
+  /* Two lines + a 4px pad either side keeps the rendered text under three
+     visible lines even when an action + a long quote are both shown. */
+  padding: 5px 9px 6px;
+  background: color-mix(in srgb, var(--surface2) 92%, transparent);
+  /* Owner-tinted border: ~50% alpha of the card's accent. Falls back to the
+     neutral `--line` when --bubble-accent is unset (defensive only). */
+  border: 1px solid color-mix(in srgb, var(--bubble-accent, var(--line)) 50%, transparent);
+  border-radius: 9px;
+  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.7),
+              0 1px 2px rgba(0, 0, 0, 0.4);
+  color: var(--fg-soft);
+  font: 500 11px/1.35 "IBM Plex Sans", sans-serif;
+  /* Default transform = above (no shift up: the inline style.left = rect.x
+     + rect.w/2 already centres the bubble on its own anchor; we keep a
+     small `translate(-50%, 0)` so the inline `left` is the bubble's centre). */
+  transform: translate(-50%, 0);
+  white-space: nowrap; overflow: hidden;
+  /* Subtle fade-in only on first mount per node; reduced-motion drops the
+     transition so it appears instantly. */
+  opacity: 0; animation: bubble-in 180ms ease-out forwards;
+}
+/* Collision flag: a bubble that could not find a collision-free side keeps
+   its 'above' anchor but the helper flagged it. The marker is a soft red
+   border so the operator can spot the conflict without losing the bubble
+   entirely. */
+.bubble[data-collision="1"] {
+  border-color: color-mix(in srgb, #e0a33e 60%, transparent);
+}
+.bubble-tail {
+  position: absolute; left: 50%; bottom: -7px; width: 12px; height: 7px;
+  /* Tiny triangle pointing down at the card by default. Drawn as a rotated
+     square so the border blends with the bubble border on three sides.
+     Tinted with the owner accent so the tail carries the owner too (the
+     tether line starts at the tail's tip). */
+  background: color-mix(in srgb, var(--surface2) 92%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--bubble-accent, var(--line)) 50%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--bubble-accent, var(--line)) 50%, transparent);
+  transform: translateX(-50%) rotate(45deg);
+}
+/* Side-specific repositioning of the tail so it always points at the owner
+   card. The 14px CSS-bar .bubble-leader is GONE: the routed .bubble-tether
+   svg below carries the line in the owner's identity hue, terminating in
+   a circle on the card's socket. The tail is the only owner-anchored
+   detail the bubble carries in itself. */
+/* below: tail on the TOP edge, pointing up at the card. */
+.bubble[data-side="below"] .bubble-tail {
+  bottom: auto; top: -7px;
+  border-bottom: 0; border-top: 1px solid color-mix(in srgb, var(--bubble-accent, var(--line)) 50%, transparent);
+  border-right: 0; border-left: 1px solid color-mix(in srgb, var(--bubble-accent, var(--line)) 50%, transparent);
+  transform: translateX(-50%) rotate(45deg);
+}
+/* right: tail on the LEFT edge, pointing left at the card. */
+.bubble[data-side="right"] .bubble-tail {
+  left: -7px; bottom: 50%;
+  border-bottom: 0; border-left: 0;
+  border-top: 1px solid color-mix(in srgb, var(--bubble-accent, var(--line)) 50%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--bubble-accent, var(--line)) 50%, transparent);
+  transform: translateY(50%) rotate(45deg);
+}
+/* left: tail on the RIGHT edge, pointing right at the card. */
+.bubble[data-side="left"] .bubble-tail {
+  left: auto; right: -7px; bottom: 50%;
+  border-right: 0; border-bottom: 0;
+  border-top: 1px solid color-mix(in srgb, var(--bubble-accent, var(--line)) 50%, transparent);
+  border-left: 1px solid color-mix(in srgb, var(--bubble-accent, var(--line)) 50%, transparent);
+  transform: translateY(50%) rotate(45deg);
+}
+
+/* Bubble wrap: the opacity carrier for the hover-isolation (D3). The wrap
+   itself is positioned absolute at 0,0 with full viewport extents so the
+   inner SVG renders in flow space (ViewportPortal's transform), and the
+   .bubble is positioned absolutely in flow coords inside it. The wrap
+   CANNOT sit on .bubble itself because .bubble has a CSS animation that
+   fills opacity 0->1 forwards for 180ms (entry fade-in), so a class on
+   .bubble would lose to that fill. The wrap carries the dim state in
+   its own `data-dim` attribute, never touched by the entry animation.
+   Pointer-events stay none so the wrap cannot steal a card drag. */
+.bubble-wrap {
+  position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease-out;
+}
+.bubble-wrap[data-dim="1"] { opacity: .15; }
+@media (prefers-reduced-motion: reduce) {
+  /* Reduced motion: drop the dim transition so the fade is instant. */
+  .bubble-wrap { transition: none; }
+}
+
+/* Bubble tether: SVG that fills the wrap. The path is dotted beads in
+   the owner's identity hue, with a filled circle at the card's socket.
+   Line grammar (visual contract):
+     - containment edges = solid faint grey (drawn by react-flow edges)
+     - active work wires = glowing animated cyan (ParticleLayer)
+     - bubble link = dotted beads in the card identity hue ending in a
+       socket dot (THIS rule, plus the matching .bubble-tether circle)
+   pointer-events stay none so the svg never intercepts a click/drag. The
+   strokeDasharray "0 6" produces a dot pattern with 6 px gaps. The
+   circle's fill matches the stroke so the socket reads as the dot where
+   the line lands on the card. The SVG sits behind the bubble (z-index 4
+   vs the bubble's 5) but in front of the cards (default z). */
+.bubble-tether {
+  position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+  width: 100%; height: 100%;
+  overflow: visible; pointer-events: none;
+  z-index: 4;
+}
+.bubble-tether path {
+  fill: none;
+  stroke: var(--bubble-accent, var(--line));
+  stroke-width: 2;
+  stroke-dasharray: 0 6;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+.bubble-tether circle { fill: var(--bubble-accent, var(--line)); }
+
+.bubble-line { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+.bubble-line + .bubble-line { margin-top: 1px; }
+.bubble-action {
+  color: var(--fg);
+  font: 600 11px/1.35 "IBM Plex Mono", monospace;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.bubble-age {
+  color: var(--muted);
+  font: 500 9.5px/1 "IBM Plex Mono", monospace;
+  letter-spacing: .04em;
+  flex: 0 0 auto;
+  padding: 1px 5px; border-radius: 99px;
+  border: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+}
+.bubble-said {
+  color: var(--fg-soft);
+  font-style: italic;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  /* Slightly dimmer than the action line so the action is the eye-magnet. */
+  opacity: 0.78;
+}
+.bubble-said::before { content: '“'; opacity: 0.55; margin-right: 1px; }
+.bubble-said::after  { content: '”'; opacity: 0.55; margin-left: 1px; }
+@keyframes bubble-in {
+  from { opacity: 0; transform: translate(-50%, -2px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Reduced motion: drop the entry animation; the bubble pops in. */
+  .bubble { animation: none; opacity: 1; }
+}

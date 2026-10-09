@@ -1,0 +1,137 @@
+diff --git a/.claude/skills/fleet-orchestrator/SKILL.md b/.claude/skills/fleet-orchestrator/SKILL.md
+index 24aa56a..4c2f8ea 100644
+--- a/.claude/skills/fleet-orchestrator/SKILL.md
++++ b/.claude/skills/fleet-orchestrator/SKILL.md
+@@ -183,30 +183,59 @@ Build the questions AT DECISION TIME with `fleet/bin/lib/jev-router.mjs` - never
+-hand-roll a single holistic noul, and never hardcode option lists: the wording
+-must be the real, current one so the per-wording calibration holds.
+-
+-- **Skill routing at intake:** `const cfg = loadFleetConfig();` then
+-  `skillCatalog({dirs})` (repo `.claude/skills` first, then `~/.claude/skills`)
+-  -> `buildRouteQuestions({id, instructions, options, multi:true})` ->
+-  `route({state, questions, ask: askFromConfig(cfg)})` ->
+-  `routeDecision(r.raw.answers, {...routingConfig(cfg), options})`.
+-  `routingConfig` maps the snake_case config (`jev.routing.auto_apply`,
+-  `multi_threshold`) to the camelCase `routeDecision` reads - passing
+-  `cfg.jev.routing` verbatim silently drops the calibration; `options` is the
+-  catalog, so the pick comes back as the real skill name and `multi` is
+-  computed; `askFromConfig` binds `cfg.jev.providers` (never pass `askJevChain`
+-  bare - `route` forwards its opts into askJevChain's `providers` parameter).
+-  Escalate whenever `decided_by` is not `'jev'` - you pick the worker then.
+-  `multi` comes back null (multi-uncalibrated) unless `multi_threshold` is
+-  calibrated. One-shot from the CLI: `node fleet/bin/fleet.mjs route "<task>"`.
+-- **Gate routing:** `buildGateQuestions({criteria, constraints})` emits one
+-  noul PER acceptance criterion plus core nouls and a route choice; then
+-  `const ask = askFromConfig(cfg); const detail = await ask(state, g.questions); gateVerdict(detail, {decisive:['accept','rework']})`
+-  - replan/ask_user are orchestrator ACTIONS and surface as gateVerdict's
+-  non-decisive escalation. `criteriaIndex` names WHICH criterion flagged.
+-- **Always include raw evidence in the state** - the T4 incident: criterion c5
+-  scored 0.56 (unmet) with suite output missing, 0.11 once the raw output was
+-  pasted. A summary reads as "no output shown".
+-- **Log fingerprint + raw distributions** in gates.jsonl / tasks.jsonl
+-  (`route()` returns `fingerprint`; persist the answers object, model id).
+-- **Mechanism/tool routing is ADVISORY for now** (uncalibrated): the same
+-  builders can route tools, but you decide, JEV only suggests.
+-- Re-calibrate after any wording or catalog change:
++hand-roll a noul or hardcode option lists (the wording IS the calibration). Both
++recipes are complete: save one to a .mjs, edit its task/criteria text, run node.
++One-shot CLI: `node fleet/bin/fleet.mjs route "<task>"` (`--multi`).
++
++Skill routing at intake - a custom `id` is safe: `route()` returns it as `r.id`
++and `routeDecision` finds the single choice answer on its own:
++
++```js
++// 5c recipe 1 - SKILL ROUTING (edit task, then: node route-task.mjs)
++import { loadEnv } from 'file:///<repo>/Agent/Orchestrator/fleet/bin/lib/env.mjs';
++import { loadFleetConfig, skillCatalog, buildRouteQuestions, route, routeDecision, routingConfig, askFromConfig } from 'file:///<repo>/Agent/Orchestrator/fleet/bin/lib/jev-router.mjs';
++loadEnv();                                     // JEV_API_KEY from Agent/Orchestrator/.env
++const cfg = loadFleetConfig();                 // fleet/config.json -> cfg.jev.providers, cfg.jev.routing
++const dirs = ['<repo>/Agent/Orchestrator/.claude/skills', '<machine-path>/.claude/skills'];
++const options = skillCatalog({ dirs });        // { skill: description } from SKILL.md frontmatter; repo dir wins
++const state = { task: 'Refactor fleet/bin/lib/timing.mjs and keep its tests green', report: 'none - intake routing', evidence: 'none yet' };  // signal first, then RAW evidence
++const questions = buildRouteQuestions({
++  id: 'skill',                                // free [a-z0-9_] key; comes back as r.id
++  instructions: 'Which single skill should the worker load to do this task? Judge from the skill descriptions.',
++  options, multi: true,                       // the catalog; one noul per option -> d.multi
++});
++const fetchImpl = globalThis.fetch;            // bound once so a test can inject a stub here
++const ask = askFromConfig(cfg, { fetchImpl }); // binds cfg.jev.providers - never pass askJevChain bare
++const r = await route({ state, questions, ask });              // never throws; r.raw.degraded on failure
++const d = routeDecision(r.raw.answers, { ...routingConfig(cfg), options });  // snake->camel thresholds; id inferred
++console.log(JSON.stringify({ d, id: r.id, fingerprint: r.fingerprint, model: r.raw.model, provider: r.raw.provider }));
++// d.decided_by !== 'jev' -> escalate: you pick the worker (d.branch says why)
++```
++
++Gate routing (G2/G3) - one noul PER acceptance criterion, so a flag names the criterion:
++
++```js
++// 5c recipe 2 - GATE ROUTING (edit criteria/constraints + state, then: node gate-task.mjs)
++import { loadEnv } from 'file:///<repo>/Agent/Orchestrator/fleet/bin/lib/env.mjs';
++import { loadFleetConfig, buildGateQuestions, askFromConfig } from 'file:///<repo>/Agent/Orchestrator/fleet/bin/lib/jev-router.mjs';
++import { gateVerdict } from 'file:///<repo>/Agent/Orchestrator/fleet/bin/lib/jev.mjs';
++loadEnv();
++const cfg = loadFleetConfig();
++const criteria = ['node --test fleet/bin/jev-router.test.mjs exits 0', 'the report pastes raw test output'];  // the spec's criteria, verbatim
++const constraints = ['no new dependencies'];  // the spec's constraints, verbatim strings
++const g = buildGateQuestions({ criteria, constraints });  // not_met_<i>/violated_<i> nouls + route choice
++const state = { task: 'T9: two 5c snippets extracted and executed', report: 'suite green',
++                evidence: '# tests 67\n# pass 67\n# fail 0' };  // paste the REAL output - never a summary
++const fetchImpl = globalThis.fetch;
++const ask = askFromConfig(cfg, { fetchImpl });
++const detail = await ask(state, g.questions);
++const v = gateVerdict(detail, { decisive: ['accept', 'rework'] });  // replan/ask_user escalate to you
++console.log(JSON.stringify({ v, fingerprint: g.fingerprint, model: detail.model, provider: detail.provider }));
++for (const [k, text] of Object.entries(g.criteriaIndex))   // names WHICH criterion flagged
++  if ((v.flags ?? {})[k] > 0.55) console.log('FLAGGED ' + k + ' <- ' + text);
++```
++
++- Escalate whenever `decided_by` is not `'jev'` (the branch says why); `multi` is
++  null until `multi_threshold` is calibrated. Log `fingerprint`, the raw
++  distributions and the model id in gates.jsonl / tasks.jsonl.
++- **Raw evidence in the state, always** - the T4 incident: c5 scored 0.56 (unmet)
++  with suite output missing, 0.11 once pasted. A summary reads as "no output shown".
++- **Mechanism/tool routing is ADVISORY** (uncalibrated): you decide, JEV
++  suggests. Re-calibrate after any wording/catalog change:
+@@ -214,41 +243 @@ must be the real, current one so the per-wording calibration holds.
+-  `jev.routing`). Measured 2026-10-07 on 14 cases: choice accuracy 92.9%.
+-
+-Call JEV through `fleet/bin/lib/jev.mjs` (`askJevChain(state, questions,
+-cfg.jev.providers)`) - do not hand-roll the request. That module implements the
+-fallback (spec 14.9): it never throws on an operational failure, returns
+-`{degraded:true, reason, action:'orchestrator_review'}`, and opens a circuit
+-breaker after 3 consecutive failures so later gates short-circuit instead of each
+-paying the timeout. A 401/403 returns `fatal:true, action:'stop'` - a rejected
+-credential is a config error and must fail loudly, not degrade.
+-
+-**Windows Git Bash:** node cannot open `/tmp/...` paths (measured 2026-10-07).
+-When a node script reads the gate state from a temp file, pass a Windows path:
+-`T=$(cygpath -m /tmp)` and use `$T/<file>` for both the write and the node read.
+-
+-Apply the policy with `gateVerdict(detail)` from the same module. It returns
+-`decided_by` so you never have to infer who decided:
+-
+-    if JEV degraded / unavailable     -> you review it fully   (NEVER auto-pass)
+-    if malformed answers              -> you review it fully   (no choice / missing or unlisted
+-                                          choice / non-finite noul / no noul at all; checked first,
+-                                          before flag-first - garbage decides nothing)
+-    if any noul > 0.55                -> REWORK (flag-first; the choice cannot override)
+-    if chosen-prob < 0.60             -> you review it fully   (the CHOSEN route option, not the max)
+-    if any flag in 0.40-0.60          -> you review it fully   (uncertain band)
+-    if choice is not decisive         -> you review it fully   (accept/pass/verified/rework/
+-                                          rework-needed only; other/none/unknown spellings escalate)
+-    if chosen-prob < 0.80             -> you review it fully   (below auto_apply)
+-    else                              -> follow the JEV verdict
+-
+-JEV decides ONLY when it is confident and the state carried raw evidence. Every
+-other branch is yours. Record the verdict, the raw distributions, the flags, the
+-model id, `decided_by` and `agreement` in gates.jsonl.
+-
+-Then, ALWAYS, independently of the JEV verdict:
+-- compute `git diff <base_sha>..HEAD` and `git status` yourself and confirm they
+-  match spec scope (this is also the 4a unauthorized-write backstop)
+-- run the acceptance commands yourself and capture raw output
+-- check each acceptance criterion one by one
+-
+-If your check contradicts the JEV verdict either way, record it. A disagreement is
+-the most valuable row in the run store - it is how the thresholds get tuned.
++  `jev.routing`; 2026-10-07: 14 cases, choice accuracy 92.9%).

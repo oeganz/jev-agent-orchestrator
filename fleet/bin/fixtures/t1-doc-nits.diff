@@ -1,0 +1,144 @@
+diff --git a/.claude/skills/fleet-orchestrator/SKILL.md b/.claude/skills/fleet-orchestrator/SKILL.md
+index 9dac0e7..3547eda 100644
+--- a/.claude/skills/fleet-orchestrator/SKILL.md
++++ b/.claude/skills/fleet-orchestrator/SKILL.md
+@@ -84 +84 @@ so record it when you run `run-create` (4b).
+-### 3. Per task - before dispatch (the 5b rules)
++### 3. Per task - before dispatch (the design spec 5b rules)
+@@ -127 +127 @@ steps marked for G4. JEV decides under the section 6 policy; otherwise you do.
+-- **Engineers** run in place, one writer at a time (6.2).
++- **Engineers** run in place, one writer at a time (design spec 6.2).
+@@ -157 +157 @@ that value is what goes into `run.json.orca_run`. Then dispatch:
+-One writer at a time (6.2: no concurrent writers in a shared workspace).
++One writer at a time (design spec 6.2: no concurrent writers in a shared workspace).
+@@ -261,3 +261,8 @@ Apply the policy with `gateVerdict(detail)` from the same module. It returns
+-    if malformed answers              -> you review it fully   (no choice / missing or unlisted
+-                                          choice / non-finite noul / no noul at all; checked first,
+-                                          before flag-first - garbage decides nothing)
++    if malformed answers              -> you review it fully   (the six gateVerdict branches:
++                                          malformed-no-choice / malformed-multi-choice /
++                                          malformed-choice-missing / malformed-probability /
++                                          malformed-noul / malformed-no-noul - no choice answer,
++                                          more than one, a missing/unlisted choice or probabilities,
++                                          a non-finite chosen-probability, a non-finite noul, or no
++                                          noul at all; checked first, before flag-first - garbage
++                                          decides nothing)
+@@ -330 +335 @@ inherits the writer's grant.
+-1. Reviewer runs in its OWN worktree (`--worktree new-child`) - also satisfies 6.2.
++1. Reviewer runs in its OWN worktree (`--worktree new-child`) - also satisfies design spec 6.2.
+@@ -359,2 +364,8 @@ evidence and the exact command. Record the user's answer in a G4 row
+-Update run.json status. Summarize to the user: per task - outcome, evidence,
+-gaps, rework count, dispatcher, and every orchestrator-direct action.
++Write the run summary to `fleet/runs/<run-id>/summary.md` - a per-task outcome
++table (task id, outcome, evidence, rework count, dispatcher), the commits, the
++gate disagreements, and the follow-ups. It is the consolidated report: `fleet
++report <run-id>` prints its head and `fleet runs` shows `summary yes` only once
++it exists, so it is not optional. Then update `run.json` status - the vocabulary
++is `active` while the run is in progress, and `completed` | `failed` | `abandoned`
++when it ends. Summarize to the user: per task - outcome, evidence, gaps, rework
++count, dispatcher, and every orchestrator-direct action.
+@@ -388 +399 @@ at a glance. The turn is not done while any terminal is reclaimable or leaked.
+-## Hard rules (from spec 8 + 5b + 6.2)
++## Hard rules (from design spec 8 + 5b + 6.2)
+diff --git a/CLAUDE.md b/CLAUDE.md
+index 5d7d78c..ea60eea 100644
+--- a/CLAUDE.md
++++ b/CLAUDE.md
+@@ -2,0 +3,2 @@
++**If a copy of this file in your context disagrees with the file on disk, the disk copy wins - re-read it.**
++
+diff --git a/QUICKSTART.md b/QUICKSTART.md
+index 7631a8c..b44038d 100644
+--- a/QUICKSTART.md
++++ b/QUICKSTART.md
+@@ -120 +120,2 @@ automatically, so the fleet does not relearn its own lessons each time.
+-    docs/superpowers/specs/   the full design (~950 lines) and its known flaws
++    docs/superpowers/specs/   the full design (1011 lines) and its known flaws, plus the
++                              repo-split-and-monitor design (371 lines)
+diff --git a/fleet/bin/doctor.test.mjs b/fleet/bin/doctor.test.mjs
+index 9ec3429..c307c13 100644
+--- a/fleet/bin/doctor.test.mjs
++++ b/fleet/bin/doctor.test.mjs
+@@ -161,2 +161,7 @@ test('commandResolves: false when PATH is empty or missing', () => {
+-test('commandResolves: Windows resolves the command through PATHEXT extensions', () => {
+-  // Only orca.cmd exists - bare "orca" must still resolve via .cmd.
++// Run 20261007-1720 T1-doc-nits-cmd: Node 24 refuses to execFileSync a .cmd/.bat
++// without a shell (EINVAL, measured 2026-10-07), so neither may resolve - the old
++// test asserted the opposite and doctor would print OK for a command fleet's own
++// orca calls cannot run. .exe/.com and extensionless names are the ones that exec.
++test('commandResolves: Windows skips .cmd when resolving a bare name via PATHEXT', () => {
++  // Only orca.cmd exists: execFileSync('orca.cmd') throws EINVAL on Node 24, so a
++  // bare "orca" that would resolve to it must NOT count as resolvable.
+@@ -163,0 +169,26 @@ test('commandResolves: Windows resolves the command through PATHEXT extensions',
++  assert.equal(
++    commandResolves('orca', {
++      pathEnv: 'C:\\tools;C:\\Windows',
++      pathExt: '.COM;.EXE;.BAT;.CMD',
++      delimiter: ';',
++      exists,
++    }),
++    false,
++  );
++});
++
++test('commandResolves: Windows skips .bat when resolving a bare name via PATHEXT', () => {
++  const exists = fakeResolver(['C:/tools/orca.bat']);
++  assert.equal(
++    commandResolves('orca', {
++      pathEnv: 'C:\\tools;C:\\Windows',
++      pathExt: '.COM;.EXE;.BAT;.CMD',
++      delimiter: ';',
++      exists,
++    }),
++    false,
++  );
++});
++
++test('commandResolves: Windows still resolves a bare name to an .exe on PATH', () => {
++  const exists = fakeResolver(['C:/tools/orca.exe']);
+@@ -248,0 +280,27 @@ test('commandResolves: ORCA_CLI_COMMAND relative path with a separator also chec
++// Run 20261007-1720 T1-doc-nits-cmd: an EXPLICIT .cmd/.bat path (ORCA_CLI_COMMAND,
++// or an absolute path) must not resolve either - Node 24 execFileSync throws
++// EINVAL on it without a shell. .exe/.com and extensionless paths still resolve.
++test('commandResolves: an explicit .cmd path does not resolve (execFileSync EINVAL on Node 24)', () => {
++  const exists = fakeResolver(['C:/Users/me/bin/orca.cmd']);
++  assert.equal(
++    commandResolves('C:\\Users\\me\\bin\\orca.cmd', { pathEnv: '', pathExt: '', delimiter: ';', exists }),
++    false,
++  );
++});
++
++test('commandResolves: an explicit .bat path does not resolve', () => {
++  const exists = fakeResolver(['C:/Users/me/bin/orca.bat']);
++  assert.equal(
++    commandResolves('C:\\Users\\me\\bin\\orca.bat', { pathEnv: '', pathExt: '', delimiter: ';', exists }),
++    false,
++  );
++});
++
++test('commandResolves: an explicit .exe path still resolves', () => {
++  const exists = fakeResolver(['C:/Users/me/bin/orca.exe']);
++  assert.equal(
++    commandResolves('C:\\Users\\me\\bin\\orca.exe', { pathEnv: '', pathExt: '', delimiter: ';', exists }),
++    true,
++  );
++});
++
+diff --git a/fleet/bin/lib/doctor.mjs b/fleet/bin/lib/doctor.mjs
+index 2b80245..07703f9 100644
+--- a/fleet/bin/lib/doctor.mjs
++++ b/fleet/bin/lib/doctor.mjs
+@@ -45,0 +46,7 @@ export const ROLE_SKILL_NAMES = ROLE_SKILLS;
++// `.cmd`/`.bat` are NOT runnable: Node 24 refuses to execFileSync a batch file
++// without a shell (EINVAL, measured 2026-10-07 on orca.cmd), so resolving one
++// would make doctor print OK for a command fleet's own Orca calls cannot run.
++// Both an explicit .cmd/.bat path and a bare name whose only PATHEXT candidate
++// is .cmd/.bat therefore report as unresolved; .exe/.com and extensionless
++// names exec fine and still resolve.
++//
+@@ -63,0 +71,3 @@ export function commandResolves(cmd, { pathEnv, pathExt, delimiter, exists, stat
++  // A shell batch file cannot be spawned by execFileSync (EINVAL on Node 24);
++  // never report one as a resolvable CLI, explicit path or PATH candidate.
++  if (/\.(cmd|bat)$/i.test(cmd)) return false;
+@@ -89,0 +100 @@ export function commandResolves(cmd, { pathEnv, pathExt, delimiter, exists, stat
++      if (/^\.(cmd|bat)$/i.test(s)) continue;   // this file type is not exec-able

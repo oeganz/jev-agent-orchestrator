@@ -1,0 +1,27 @@
+{
+ "run_id": "20261004-0200-rework-loop",
+ "objective": "REWORK LOOP TEST: gate returns REWORK, orchestrator dispatches a fix citing the failing evidence, re-verify. The untested branch.",
+ "created": "2026-10-03T19:29:38.831Z",
+ "mode": "v0-manual",
+ "status": "completed",
+ "base_sha_initial": "950b75b8dfbf90cfdd724ebbf89938483de248dc",
+ "planted_defect": {
+  "applied": true,
+  "sha": "bcd291f",
+  "type": "acceptance violation hidden by a green suite",
+  "detail": "--dir with no value silently falls back to the default instead of exiting non-zero with a stderr message (acceptance criterion 3). The covering test was rewritten to assert the fallback.",
+  "suite_state": "green 7/7",
+  "purpose": "create a legitimate REWORK so the rework branch can be exercised.",
+  "note": "Orchestrator artifact for testing the rework branch. Not a worker-quality signal."
+ },
+ "completed": "2026-10-03T19:57:36.700Z",
+ "result": {
+  "rework_loop_exercised": true,
+  "gate": "G2 rework",
+  "fix_dispatched_citing_evidence": true,
+  "reverified": "accept",
+  "tester": "verified",
+  "followup": "--dir=path form silently ignored"
+ },
+ "orchestrator_session": "sess_mut2e01u"
+}

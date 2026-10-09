@@ -1,0 +1,48 @@
+%%{init: {"theme": "dark", "themeVariables": {"primaryColor": "#1e1622", "primaryBorderColor": "#e551ba", "primaryTextColor": "#f2eef4", "lineColor": "#a89ba8", "fontSize": "14px"}}}%%
+flowchart TD
+    G0["🟡 GATE 0 — Budget<br/>estimate.mjs gives cost + minutes<br/>JEV classifies complexity ONLY"]
+    CLS["🟣 JEV classification<br/>choice: trivial / small / medium / large<br/>JEV never computes cost — it cannot count"]
+
+    MAP["⚙️ Code maps (role × complexity) → SLOT<br/>policy in config = MEASURED, not guessed"]
+
+    RESOLVE["🔑 Resolve slot → model id<br/>1 · config.local.json override<br/>2 · $ANTHROPIC_DEFAULT_&lt;SLOT&gt;_MODEL<br/>3 · omit --model → inherit machine default"]
+
+    DISPATCH["🔵 Dispatch at the CHEAPEST slot<br/>records tier_slot · model_requested ·<br/>model_effective · resolution_path"]
+
+    LADDER["The ladder is SLOTS, never ids<br/>haiku → sonnet → opus → fable<br/>no alias is ever committed"]
+
+    WORK["worker produces the candidate"]
+    VERIFY["🟣 JEV verifies at the gate"]
+    Q{"clean?"}
+    ACCEPT["✅ accept at cheap-tier cost"]
+    ESC{"escalations &lt; 2?"}
+    UP["⬆️ escalate to next SLOT<br/>redo · re-verify<br/>trigger: JEV flag &gt; 0.7, gate reject, or test fail"]
+    GIVEUP["👤 human / rework<br/>cheap tier is not enough"]
+
+    METRICS["📊 Measurement per (role × slot × complexity)<br/>cost per ACCEPTED task = cost × (1 + rework loops)<br/>first-pass acceptance · escalation rate · JEV flag type"]
+    DECIDE["Replace the guessed policy with measured values<br/>cheapest slot whose acceptance is not materially worse"]
+
+    G0 --> CLS --> MAP --> RESOLVE --> DISPATCH --> LADDER
+    LADDER --> WORK --> VERIFY --> Q
+    Q -->|yes| ACCEPT
+    Q -->|no| ESC
+    ESC -->|yes| UP --> VERIFY
+    ESC -->|no| GIVEUP
+    ACCEPT --> METRICS
+    UP -.-> METRICS
+    GIVEUP -.-> METRICS
+    METRICS -.->|"N ≥ 8 per cell"| DECIDE
+    DECIDE -.-> MAP
+
+    style G0 fill:#241a10,stroke:#ffb454,color:#f2eef4
+    style CLS fill:#1c1428,stroke:#b48cff,color:#f2eef4
+    style VERIFY fill:#1c1428,stroke:#b48cff,color:#f2eef4
+    style MAP fill:#241a10,stroke:#ffb454,color:#f2eef4
+    style RESOLVE fill:#241a10,stroke:#ffb454,color:#f2eef4
+    style DISPATCH fill:#1a1a2e,stroke:#6bb8ff,color:#f2eef4
+    style WORK fill:#1a1a2e,stroke:#6bb8ff,color:#f2eef4
+    style LADDER fill:#1e1622,stroke:#a89ba8,color:#f2eef4
+    style UP fill:#241a10,stroke:#ffb454,color:#f2eef4
+    style ACCEPT fill:#0f2f1d,stroke:#3ddc97,color:#f2eef4
+    style GIVEUP fill:#2f1015,stroke:#ff6b81,color:#f2eef4
+    style METRICS fill:#1e1622,stroke:#a89ba8,color:#f2eef4

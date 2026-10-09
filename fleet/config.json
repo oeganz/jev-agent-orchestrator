@@ -1,0 +1,170 @@
+{
+  "_comment": "Fleet policy. See docs/superpowers/specs/2026-10-03-agent-fleet-orchestrator-design.md. Model ids are NEVER hardcoded - slots resolve from the environment (spec 15.8).",
+  "mode": "auto",
+  "modes": {
+    "auto": {
+      "gates": [
+        "G0",
+        "G1",
+        "G2",
+        "G3"
+      ],
+      "irreversible": "human"
+    },
+    "manual": {
+      "gates": [
+        "G0",
+        "G1",
+        "G2",
+        "G3"
+      ],
+      "irreversible": "human"
+    }
+  },
+  "irreversible_actions": [
+    "deploy",
+    "push",
+    "force-push",
+    "delete-data",
+    "infra-change",
+    "spend-above-cap"
+  ],
+  "budget": {
+    "daily_cap": null,
+    "_cap_note": "UNCALIBRATED. The previous value (2000000) was invented and is ~60x below measured spend (118,306,514 weighted tokens on 2026-10-04). The proxy meter is not readable programmatically, so this cannot be calibrated from evidence - it needs the real figure from the user or the provider dashboard. While null, budgetCheck() is ADVISORY ONLY and never blocks a dispatch.",
+    "warn_pct": 80,
+    "hard_stop_pct": 100,
+    "reserve_pct": 10
+  },
+  "cost_weights": {
+    "input": 1,
+    "cache_write": 1.25,
+    "cache_read": 0.1,
+    "output": 3
+  },
+  "models": {
+    "tiers": {
+      "opus": {
+        "env": "ANTHROPIC_DEFAULT_OPUS_MODEL"
+      },
+      "sonnet": {
+        "env": "ANTHROPIC_DEFAULT_SONNET_MODEL"
+      },
+      "haiku": {
+        "env": "ANTHROPIC_DEFAULT_HAIKU_MODEL"
+      },
+      "fable": {
+        "env": "ANTHROPIC_DEFAULT_FABLE_MODEL"
+      }
+    },
+    "policy": {
+      "planner": {
+        "trivial": "sonnet",
+        "small": "sonnet",
+        "medium": "opus",
+        "large": "opus"
+      },
+      "engineer": {
+        "trivial": "haiku",
+        "small": "sonnet",
+        "medium": "sonnet",
+        "large": "opus"
+      },
+      "tester": {
+        "trivial": "haiku",
+        "small": "sonnet",
+        "medium": "sonnet",
+        "large": "opus"
+      },
+      "scanner": {
+        "*": "haiku"
+      },
+      "devops": {
+        "*": "opus"
+      }
+    },
+    "resolve": "env_then_inherit",
+    "record_resolved_id": true
+  },
+  "jev": {
+    "enabled": true,
+    "base_url": "https://<your-jev-endpoint>/v1/systemone",
+    "model": "jev-1-13-free",
+    "api_key_env": "JEV_API_KEY",
+    "question_set_version": "gate-v1",
+    "authority": "gate",
+    "_authority_note": "gate = JEV decides when confident AND the state carried raw evidence; every uncertain/unavailable branch escalates to orchestrator review. Never auto-passes on JEV uncertainty (spec 16 ladder). VERIFIED 2026-10-04: 5/5 labelled cases decided correctly, 0 false escalations, after the 14.12b raw-output rule removed the earlier false positive.",
+    "thresholds": {
+      "flag": 0.55,
+      "abstain": 0.6,
+      "auto_apply": 0.8,
+      "uncertain_band": [
+        0.4,
+        0.6
+      ],
+      "spec_preflight_flag": 0.6
+    },
+    "state_budget_chars": 48000,
+    "timeout_ms": 8000,
+    "retries": 1,
+    "circuit_breaker": {
+      "failures_to_open": 3,
+      "cooldown_ms": 300000
+    },
+    "on_unavailable": "orchestrator_review",
+    "on_auth_error": "hard_fail",
+    "default_scope": "full",
+    "_outage_evidence": "see the operator's private evidence archive (not shipped)",
+    "providers": [
+      {
+        "base_url": "https://<your-jev-endpoint>/v1/systemone",
+        "model": "jev-1-13-free",
+        "api_key_env": "JEV_API_KEY",
+        "note": "primary, free"
+      },
+      {
+        "base_url": "https://openrouter.ai/api/alpha/decisions",
+        "model": "jev-1.13",
+        "api_key_env": "JEV_API_KEY2",
+        "note": "fallback, metered - reports usage.cost in USD"
+      }
+    ],
+    "_providers_note": "Both speak the native systemone shape. CORRECTED 2026-10-04: OpenRouter DOES serve JEV, at /api/alpha/decisions - not the chat endpoint. typesafe/jev-router is a different product (a model router) and is NOT usable as a gate.",
+    "_authority_verified": "2026-10-04",
+    "routing": {
+      "auto_apply": 0.65,
+      "abstain": 0.6,
+      "multi_threshold": 0.65,
+      "calibrated_on": "2026-10-07",
+      "cases": 14,
+      "model": "jev-1-13-free (id returned per call; see jev.model)"
+    }
+  },
+  "gates_jev": {
+    "G1": true,
+    "G2": true,
+    "G3": true,
+    "G0": false,
+    "G4": false
+  },
+  "model_rates": {
+    "_comment": "Substring -> USD per 1M tokens, used by `fleet score <run-id>` for the price axis. Longest-key wins so specific ids beat broad ones (e.g. 'claude-opus-5-5' before 'claude'). All entries below are 0 (UNPRICED) until real rates are supplied from the proxy / provider dashboard.",
+    "claude-opus-5-5": 0,
+    "claude-opus-5": 0,
+    "claude-sonnet-5": 0,
+    "claude-sonnet-1-2": 0,
+    "claude-haiku-1": 0,
+    "glm-5.3": 0,
+    "MiniMax-M3": 0,
+    "deepseek-flash": 0,
+    "sonnet": 0,
+    "haiku": 0,
+    "opus": 0,
+    "claude": 0
+  },
+  "fleet": {
+    "agent": "claude",
+    "worktree_default": "current",
+    "max_depth": 2
+  }
+}

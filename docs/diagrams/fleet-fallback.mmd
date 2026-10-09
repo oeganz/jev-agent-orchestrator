@@ -1,0 +1,55 @@
+%%{init: {"theme": "dark", "themeVariables": {"primaryColor": "#1e1622", "primaryBorderColor": "#e551ba", "primaryTextColor": "#f2eef4", "lineColor": "#a89ba8", "fontSize": "14px"}}}%%
+flowchart TD
+    NEED["Gate decision needed<br/>G1 / G2 / G3"]
+
+    JEV["🟣 JEV first-pass<br/>cheap · calibrated · ~1s<br/>5 nouls + route choice"]
+
+    Q1{"verdict?"}
+    PASS["✅ pass<br/>max flag ≤ 0.4 · conf ≥ 0.8"]
+    UNCERTAIN["🔍 orchestrator deep review<br/>any flag 0.4–0.6<br/>the middle never auto-passes"]
+    FLAGGED["🔁 rework / escalate<br/>any flag > 0.7"]
+
+    ORCH["🔵 ORCHESTRATOR review<br/>decision maker of record<br/>never edits files"]
+    Q2{"confident?"}
+    HUMAN["👤 HUMAN review<br/>final authority"]
+    Q3{"can proceed?"}
+    STOP["⛔ STOP and report<br/>preserve state · never guess"]
+
+    subgraph FAIL["JEV unavailable — circuit breaker"]
+      CB["3 consecutive failures OR error rate high<br/>OPEN for cooldown 300s<br/>half-open probe after"]
+      MODES["timeout 8s · 429/529 backoff ·<br/>malformed = unavailable (never parse-guess) ·<br/>401 = HARD FAIL"]
+    end
+
+    subgraph OFAIL["Orchestrator dies — resume protocol"]
+      LEASE["1 · Take run lease<br/>run.json session + expiry"]
+      RECON["2 · Reconcile with Orca<br/>worker-list is truth for LIVE<br/>disk is truth for INTENDED"]
+      DRAIN["3 · Drain Run inbox<br/>worker_done sent while nobody listened"]
+      REDO["4 · Re-decide only what is undecided<br/>settled stays settled"]
+      ORPHAN["5 · Settle orphans<br/>never leave a terminal live"]
+    end
+
+    NEED --> JEV --> Q1
+    Q1 -->|pass| PASS
+    Q1 -->|uncertain| UNCERTAIN
+    Q1 -->|flagged| FLAGGED
+    UNCERTAIN --> ORCH
+    FLAGGED --> ORCH
+    JEV -.->|"unavailable / timeout / malformed"| ORCH
+    JEV -.-> CB
+    CB -.-> MODES
+    ORCH --> Q2
+    Q2 -->|yes| PASS
+    Q2 -->|no| HUMAN --> Q3
+    Q3 -->|yes| PASS
+    Q3 -->|no| STOP
+
+    LEASE --> RECON --> DRAIN --> REDO --> ORPHAN
+    ORPHAN -.-> ORCH
+
+    style PASS fill:#0f2f1d,stroke:#3ddc97,color:#f2eef4
+    style JEV fill:#1c1428,stroke:#b48cff,color:#f2eef4
+    style ORCH fill:#241a10,stroke:#ffb454,color:#f2eef4
+    style HUMAN fill:#0f2f1d,stroke:#3ddc97,color:#f2eef4
+    style STOP fill:#2f1015,stroke:#ff6b81,color:#f2eef4
+    style UNCERTAIN fill:#241a10,stroke:#ffb454,color:#f2eef4
+    style FLAGGED fill:#2f1015,stroke:#ff6b81,color:#f2eef4
