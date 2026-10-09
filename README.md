@@ -23,12 +23,10 @@ store.
 Live activity bubbles - each card shows the worker's current action and its
 last words as they happen:
 
-[![Watch: Live activity bubbles](docs/assets/monitor-live-activity-poster.jpg)](docs/assets/monitor-live-activity.mp4)
+[![Watch: Canvas pan and drag](docs/assets/monitor-canvas-pan-poster.jpg)](https://github.com/user-attachments/assets/ddc74910-929e-47a3-bf66-93e9f1289749)
 
-Canvas pan and drag - the whole board moves with the pointer while status
-badges keep updating:
 
-[![Watch: Canvas pan and drag](docs/assets/monitor-canvas-pan-poster.jpg)](docs/assets/monitor-canvas-pan.mp4)
+
 
 ## Why this exists
 
